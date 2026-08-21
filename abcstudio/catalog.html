@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Catálogo — ABC Studio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#C6FF3D;
+  --violet:#7B2FF7; --panel:#131316; --line:#232327; --muted:#8B8B93;
+}
+body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; }
+.font-display{ font-family:'Anton',sans-serif; letter-spacing:.02em; }
+.font-mono{ font-family:'JetBrains Mono',monospace; }
+.navbar{ position:sticky; top:0; z-index:40; background:rgba(11,11,13,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.brand-dot{ color:var(--pulse); }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border-radius:999px; font-weight:600; font-size:14px; transition:transform .15s ease, opacity .15s ease; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:var(--volt); color:var(--ink); }
+.btn-primary:hover{ opacity:.88; }
+.btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--paper); }
+.btn-ghost:hover{ border-color:var(--paper); }
+.btn-sm{ padding:8px 14px; font-size:12px; }
+.product-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .18s ease, border-color .18s ease; }
+.product-card:hover{ transform:translateY(-4px); border-color:#3a3a40; }
+.product-thumb{ height:140px; display:flex; align-items:center; justify-content:center; text-align:center; padding:0 12px; font-family:'Anton',sans-serif; font-size:14px; color:rgba(244,243,241,.35); }
+.type-badge{ font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; padding:3px 9px; border-radius:999px; letter-spacing:.05em; }
+.cart-overlay{ position:fixed; inset:0; background:rgba(11,11,13,.6); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:50; }
+.cart-overlay.open{ opacity:1; pointer-events:auto; }
+.cart-drawer{ position:fixed; top:0; right:0; height:100%; width:100%; max-width:380px; background:var(--panel); border-left:1px solid var(--line); transform:translateX(100%); transition:transform .25s ease; z-index:51; display:flex; flex-direction:column; }
+.cart-drawer.open{ transform:translateX(0); }
+.cart-badge{ position:absolute; top:-6px; right:-6px; background:var(--pulse); color:#fff; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; transform:scale(0); transition:transform .2s ease; }
+.cart-badge.show{ transform:scale(1); }
+.toast{ position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); background:var(--volt); color:var(--ink); font-weight:600; font-size:13px; padding:10px 18px; border-radius:999px; opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease; z-index:60; }
+.toast.show{ opacity:1; transform:translate(-50%,0); }
+.chip{ padding:7px 14px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:12px; transition:all .15s; }
+.chip.active{ background:var(--paper); color:var(--ink); border-color:var(--paper); }
+.skeleton{ background:linear-gradient(90deg, var(--panel) 25%, #1c1c20 37%, var(--panel) 63%); background-size:400% 100%; animation:skeleton-loading 1.4s ease infinite; border-radius:16px; }
+@keyframes skeleton-loading{ 0%{background-position:100% 50%;} 100%{background-position:0 50%;} }
+.fade-in-up{ opacity:0; transform:translateY(16px); animation:fadeInUp .6s ease forwards; }
+@keyframes fadeInUp{ to{ opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion: reduce){ .fade-in-up,.cart-drawer,.cart-overlay,.toast,.skeleton{ animation:none!important; transition:none!important; } }
+</style>
+</head>
+<body>
+
+  <header class="navbar flex items-center justify-between px-6 md:px-10 py-4">
+    <a href="index.html" class="font-display text-xl">ABC<span class="brand-dot"> STUDIO</span></a>
+    <nav class="hidden md:flex gap-8 text-sm" style="color:var(--muted)">
+      <a href="catalog.html" class="hover:text-white">Catálogo</a>
+      <a href="catalog.html?type=workshop" class="hover:text-white">Talleres</a>
+      <a href="catalog.html?type=merch" class="hover:text-white">Mercancía</a>
+    </nav>
+    <button id="cart-toggle" class="relative btn btn-ghost btn-sm">
+      Carrito
+      <span id="cart-badge" class="cart-badge">0</span>
+    </button>
+  </header>
+
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pt-14 pb-6 fade-in-up">
+    <p class="font-mono text-xs uppercase tracking-widest mb-3" style="color:var(--pulse)">Catálogo</p>
+    <h1 class="font-display text-3xl md:text-5xl">Elige cómo quieres bailar</h1>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pb-8 flex flex-wrap gap-2" id="filter-row">
+    <button class="chip" data-type="all">Todo</button>
+    <button class="chip" data-type="drop_in">Drop-In</button>
+    <button class="chip" data-type="pack">Paquetes</button>
+    <button class="chip" data-type="membership">Membresías</button>
+    <button class="chip" data-type="workshop">Talleres</button>
+    <button class="chip" data-type="digital_course">Digital</button>
+    <button class="chip" data-type="merch">Mercancía</button>
+  </section>
+
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pb-24">
+    <div id="skeleton-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="skeleton h-56"></div><div class="skeleton h-56"></div><div class="skeleton h-56"></div>
+      <div class="skeleton h-56"></div><div class="skeleton h-56"></div><div class="skeleton h-56"></div>
+    </div>
+    <div id="product-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 hidden"></div>
+  </section>
+
+  <div id="cart-overlay" class="cart-overlay"></div>
+  <aside id="cart-drawer" class="cart-drawer">
+    <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--line)">
+      <p class="font-display">Tu carrito</p>
+      <button id="cart-close" class="text-xl leading-none" style="color:var(--muted)">✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5">
+      <p id="cart-empty" class="text-sm py-10 text-center" style="color:var(--muted)">Tu carrito está vacío.</p>
+      <div id="cart-items"></div>
+    </div>
+    <div class="px-5 py-5 border-t" style="border-color:var(--line)">
+      <div class="flex justify-between mb-4 font-mono text-sm">
+        <span style="color:var(--muted)">Total</span>
+        <span id="cart-total">$0.00 MXN</span>
+      </div>
+      <button id="checkout-btn" class="btn btn-primary w-full">Pagar con Mercado Pago</button>
+    </div>
+  </aside>
+
+  <div id="toast" class="toast"></div>
+
+  <footer class="max-w-5xl mx-auto px-6 md:px-10 py-10 border-t text-sm" style="border-color:var(--line); color:var(--muted)">
+    © 2026 ABC Studio — C. Independencia 2800, San Luis Potosí, S.L.P.
+  </footer>
+
+  <script>
+    // ------------------------------------------------------------------
+    // Espejo en JS del seed de database/schema.sql (los 10 productos).
+    // En el proyecto conectado esto se reemplaza por:
+    //   fetch('/api/products').then(r => r.json())
+    // ------------------------------------------------------------------
+    const PRODUCTS = [
+      { id: 1, name: "Pase Drop-In Urbano", type: "drop_in", price: 180, description: "Entra a una sola clase de hip hop, reggaetón o house." },
+      { id: 2, name: "Paquete x4 Clases", type: "pack", price: 620, description: "4 clases grupales a elegir, válidas por 30 días." },
+      { id: 3, name: "Membresía Mensual Ilimitada", type: "membership", price: 980, description: "Acceso ilimitado a todas las clases grupales durante 30 días." },
+      { id: 4, name: "Taller Intensivo Heels (3 días)", type: "workshop", price: 650, description: "Tres días consecutivos de técnica y coreografía en tacón. Cupo limitado." },
+      { id: 5, name: "Bootcamp Hip Hop Fin de Semana", type: "workshop", price: 550, description: "Sábado y domingo de fundamentos y coreografía grupal." },
+      { id: 6, name: "Curso Digital: Coreografía Reggaetón", type: "digital_course", price: 299, description: "Video-curso descargable, acceso de por vida, nivel intermedio." },
+      { id: 7, name: "Curso Digital: Fundamentos de Popping", type: "digital_course", price: 249, description: "Video-curso descargable de aislamientos y control muscular." },
+      { id: 8, name: "Hoodie ABC Studio", type: "merch", price: 550, description: "Sudadera oversize con logo bordado.", variants: ["S","M","L","XL"] },
+      { id: 9, name: "Grip Socks ABC Studio", type: "merch", price: 180, description: "Calcetines antiderrapantes para heels y piso.", variants: ["S","M","L"] },
+      { id: 10, name: "Dance Bag ABC Studio", type: "merch", price: 420, description: "Bolsa deportiva impermeable, compartimento para tenis." },
+    ];
+    const TYPE_META = {
+      drop_in:{label:"Drop-In",color:"var(--volt)"}, pack:{label:"Paquete",color:"var(--volt)"},
+      membership:{label:"Membresía",color:"var(--pulse)"}, workshop:{label:"Taller",color:"var(--violet)"},
+      digital_course:{label:"Digital",color:"var(--violet)"}, merch:{label:"Merch",color:"var(--pulse)"},
+    };
+
+    const Cart = (() => {
+      let items = [];
+      function add(product, variant = null) {
+        const key = variant ? `${product.id}-${variant}` : `${product.id}`;
+        const existing = items.find((i) => i.key === key);
+        if (existing) existing.qty += 1;
+        else items.push({ key, id: product.id, name: product.name, price: product.price, variant, qty: 1 });
+        render(); Toast.show(`${product.name} agregado al carrito`);
+      }
+      function remove(key) { items = items.filter((i) => i.key !== key); render(); }
+      function setQty(key, qty) { const it = items.find((i) => i.key === key); if (it) it.qty = Math.max(1, qty); render(); }
+      function total() { return items.reduce((s, i) => s + i.price * i.qty, 0); }
+      function count() { return items.reduce((s, i) => s + i.qty, 0); }
+      function render() {
+        const list = document.getElementById("cart-items");
+        const totalEl = document.getElementById("cart-total");
+        const emptyEl = document.getElementById("cart-empty");
+        const badge = document.getElementById("cart-badge");
+        list.innerHTML = "";
+        emptyEl.classList.toggle("hidden", items.length > 0);
+        items.forEach((item) => {
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between gap-3 py-3 border-b";
+          row.style.borderColor = "var(--line)";
+          row.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold truncate">${item.name}</p>
+              <p class="text-xs font-mono" style="color:var(--muted)">${item.variant ? `Talla ${item.variant} · ` : ""}$${item.price.toFixed(2)} c/u</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="number" min="1" value="${item.qty}" class="w-12 bg-transparent border rounded text-center text-sm py-1" style="border-color:var(--line)" onchange="Cart.setQty('${item.key}', parseInt(this.value||1))" />
+              <button onclick="Cart.remove('${item.key}')" class="text-xs" style="color:var(--pulse)">✕</button>
+            </div>`;
+          list.appendChild(row);
+        });
+        totalEl.textContent = `$${total().toFixed(2)} MXN`;
+        badge.textContent = count();
+        badge.classList.toggle("show", count() > 0);
+      }
+      function toggleDrawer(open) {
+        document.getElementById("cart-drawer").classList.toggle("open", open);
+        document.getElementById("cart-overlay").classList.toggle("open", open);
+      }
+      async function checkout() {
+        if (items.length === 0) return;
+        Toast.show("Simulando: POST /api/orders → /api/payments/create-preference…");
+        console.log("[checkout] Payload que se enviaría al backend:", {
+          items: items.map((i) => ({ productId: i.id, variant: i.variant, quantity: i.qty })), total: total(),
+        });
+      }
+      return { add, remove, setQty, total, count, render, toggleDrawer, checkout };
+    })();
+
+    const Toast = (() => {
+      let t;
+      function show(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg; el.classList.add("show");
+        clearTimeout(t); t = setTimeout(() => el.classList.remove("show"), 2200);
+      }
+      return { show };
+    })();
+
+    document.getElementById("cart-toggle").addEventListener("click", () => Cart.toggleDrawer(true));
+    document.getElementById("cart-close").addEventListener("click", () => Cart.toggleDrawer(false));
+    document.getElementById("cart-overlay").addEventListener("click", () => Cart.toggleDrawer(false));
+    document.getElementById("checkout-btn").addEventListener("click", () => Cart.checkout());
+    Cart.render();
+
+    let activeType = new URLSearchParams(location.search).get("type") || "all";
+
+    function cardHTML(p) {
+      const meta = TYPE_META[p.type];
+      const variantPicker = p.variants
+        ? `<select id="variant-${p.id}" class="text-xs bg-transparent border rounded px-2 py-1" style="border-color:var(--line)">
+             ${p.variants.map((v) => `<option value="${v}">${v}</option>`).join("")}
+           </select>`
+        : "";
+      const onAdd = p.variants
+        ? `Cart.add(${JSON.stringify(p)}, document.getElementById('variant-${p.id}').value)`
+        : `Cart.add(${JSON.stringify(p)})`;
+      return `
+        <div class="product-card">
+          <div class="product-thumb" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">${p.name}</div>
+          <div class="p-4">
+            <span class="type-badge" style="background:${meta.color}; color:var(--ink)">${meta.label}</span>
+            <p class="font-semibold text-sm mt-2">${p.name}</p>
+            <p class="text-xs mt-1" style="color:var(--muted)">${p.description}</p>
+            <div class="flex items-center justify-between mt-4 gap-2 flex-wrap">
+              <span class="font-mono text-sm">$${p.price.toFixed(2)}</span>
+              <div class="flex items-center gap-2">${variantPicker}<button class="btn btn-primary btn-sm" onclick="${onAdd}">Agregar</button></div>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("product-grid");
+      const filtered = activeType === "all" ? PRODUCTS : PRODUCTS.filter((p) => p.type === activeType);
+      grid.innerHTML = filtered.map(cardHTML).join("");
+    }
+
+    document.querySelectorAll("#filter-row .chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("#filter-row .chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        activeType = chip.dataset.type;
+        renderGrid();
+      });
+      if (chip.dataset.type === activeType) chip.classList.add("active");
+    });
+
+    // Simula un pequeño tiempo de carga (skeleton -> grid real).
+    setTimeout(() => {
+      renderGrid();
+      document.getElementById("skeleton-grid").classList.add("hidden");
+      document.getElementById("product-grid").classList.remove("hidden");
+    }, 700);
+  </script>
+</body>
+</html>
