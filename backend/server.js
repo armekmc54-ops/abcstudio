@@ -10,9 +10,9 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 
-const authRoutes = require("./routes/auth.routes");
-const productsRoutes = require("./routes/products.routes");
-const paymentsRoutes = require("./routes/payments.routes"); //[cite: 7]
+const authRoutes = require("./src/routes/auth.routes");
+const productsRoutes = require("./src/routes/products.routes");
+const paymentsRoutes = require("./src/routes/payments.routes"); //
 
 const app = express();
 
