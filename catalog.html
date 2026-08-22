@@ -72,7 +72,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     <h1 class="font-display text-3xl md:text-5xl">Reserva tu lugar o equipa tu danza</h1>
   </section>
 
-  <!-- Filtros de categoría totalmente conectados -->
+  <!-- Filtros de categoría -->
   <section class="max-w-5xl mx-auto px-6 md:px-10 pb-8 flex flex-wrap gap-2" id="filter-row">
     <button class="chip" data-type="all">Todos</button>
     <button class="chip" data-type="drop_in">Clases Drop-In</button>
@@ -113,7 +113,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
-  <!-- Modal Interactivo de Checkout de Mercado Pago -->
+  <!-- Modal Interactivo de Checkout -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
@@ -122,12 +122,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <span class="text-xs font-mono tracking-widest text-blue-400 uppercase">Mercado Pago Sandbox Checkout</span>
       </div>
       <h3 class="font-display text-xl mb-1">Confirmar Orden</h3>
-      <p class="text-xs mb-4" style="color:var(--muted)">Simulador de pasarela de pagos integrada para ABC Studio.</p>
+      <p class="text-xs mb-4" style="color:var(--muted)">Pasarela oficial integrada para ABC Studio.</p>
       
       <div class="bg-black/40 rounded-xl p-4 mb-4 border border-[#232327]">
         <div class="flex justify-between text-xs mb-2 text-gray-400">
-          <span>ID de Preferencia:</span>
-          <span class="font-mono text-blue-400">PREF-ABC-849204</span>
+          <span>Pasarela:</span>
+          <span class="font-mono text-blue-400">Mercado Pago Sandbox SDK</span>
         </div>
         <div class="flex justify-between text-sm font-semibold">
           <span>Monto total:</span>
@@ -139,21 +139,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <div class="space-y-3 text-xs mb-5">
           <div>
             <label class="block mb-1 text-gray-400">Correo del alumno</label>
-            <input type="email" value="alumno.demo@abcstudio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt" />
-          </div>
-          <div>
-            <label class="block mb-1 text-gray-400">Tarjeta de prueba (Visa Sandbox)</label>
-            <input type="text" value="•••• •••• •••• 4242" disabled class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-gray-400 font-mono" />
+            <input type="email" id="payer-email-input" value="alumno.demo@abcstudio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt" />
           </div>
         </div>
-        <button id="confirm-pay-btn" class="btn btn-primary w-full py-3">Autorizar Pago Sandbox</button>
-      </div>
-
-      <div id="modal-screen-success" class="hidden text-center py-4">
-        <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-3 text-2xl font-bold">✓</div>
-        <h4 class="font-display text-lg text-green-400 mb-1">¡Pago Aprobado con Éxito!</h4>
-        <p class="text-xs text-gray-300 mb-4">Webhook recibido: La orden se actualizó a <span class="font-mono text-green-400">PAID</span> y los accesos han sido confirmados.</p>
-        <button id="finish-btn" class="btn btn-ghost btn-sm w-full">Finalizar y Vaciar Carrito</button>
+        <button id="confirm-pay-btn" class="btn btn-primary w-full py-3">Continuar a Mercado Pago</button>
       </div>
     </div>
   </div>
@@ -165,7 +154,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </footer>
 
   <script>
-    // Configuración de la API del Backend
     const API_URL = 'http://localhost:4000/api/products';
     let PRODUCTS = [];
 
@@ -178,7 +166,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
-    // 1. Carga dinámica desde PostgreSQL
+    // 1. Carga dinámica desde el Backend
     async function loadProductsFromBackend() {
       const skeletonGrid = document.getElementById("skeleton-grid");
       const productGrid = document.getElementById("product-grid");
@@ -212,7 +200,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       }
     }
 
-    // 2. Gestor de Carrito Sincronizado
+    // 2. Gestor de Carrito
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
 
@@ -379,11 +367,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       renderProducts();
     }
 
-    // 4. Modal Mercado Pago
+    // 4. Modal Checkout Conectado a Mercado Pago
     const modal = document.getElementById("checkout-modal");
     const modalTotal = document.getElementById("modal-total");
-    const screenPay = document.getElementById("modal-screen-pay");
-    const screenSuccess = document.getElementById("modal-screen-success");
 
     document.getElementById("checkout-btn").addEventListener("click", () => {
       if (Cart.items().length === 0) {
@@ -391,29 +377,42 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         return;
       }
       modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
-      screenPay.classList.remove("hidden");
-      screenSuccess.classList.add("hidden");
       Cart.toggleDrawer(false);
       modal.classList.add("open");
     });
 
     document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
-    document.getElementById("confirm-pay-btn").addEventListener("click", () => {
-      const btn = document.getElementById("confirm-pay-btn");
-      btn.textContent = "Procesando pago con Mercado Pago...";
-      btn.disabled = true;
-      setTimeout(() => {
-        screenPay.classList.add("hidden");
-        screenSuccess.classList.remove("hidden");
-        btn.textContent = "Autorizar Pago Sandbox";
-        btn.disabled = false;
-      }, 1200);
-    });
 
-    document.getElementById("finish-btn").addEventListener("click", () => {
-      Cart.clear();
-      modal.classList.remove("open");
-      Toast.show("✓ Orden guardada en base de datos.");
+    // Redirección oficial al Checkout de Mercado Pago
+    document.getElementById("confirm-pay-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("confirm-pay-btn");
+      const emailInput = document.getElementById("payer-email-input");
+      btn.textContent = "Conectando con Mercado Pago...";
+      btn.disabled = true;
+
+      try {
+        const response = await fetch('http://localhost:4000/api/payments/create-preference', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: Cart.items(),
+            payerEmail: emailInput ? emailInput.value : 'alumno@abcstudio.com'
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.sandbox_init_point || data.init_point) {
+          window.location.href = data.sandbox_init_point || data.init_point;
+        } else {
+          throw new Error(data.error || 'No se pudo generar la preferencia');
+        }
+      } catch (error) {
+        console.error('[Error Mercado Pago]:', error);
+        Toast.show('Error al conectar con la pasarela de pago');
+        btn.textContent = "Continuar a Mercado Pago";
+        btn.disabled = false;
+      }
     });
 
     // 5. Event Listeners e Inicialización
