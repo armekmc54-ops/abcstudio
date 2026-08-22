@@ -165,19 +165,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </footer>
 
   <script>
-    // Catálogo unificado de 10 productos exacto al esquema SQL
-    const PRODUCTS = [
-      { id: 1, name: "Pase Drop-In Urbano", type: "drop_in", price: 180, description: "Entra a una sola clase de hip hop, reggaetón o house." },
-      { id: 2, name: "Paquete x4 Clases", type: "pack", price: 620, description: "4 clases grupales a elegir, válidas por 30 días." },
-      { id: 3, name: "Membresía Mensual Ilimitada", type: "membership", price: 980, description: "Acceso ilimitado a todas las clases grupales durante 30 días." },
-      { id: 4, name: "Taller Intensivo Heels (3 días)", type: "workshop", price: 650, description: "Tres días consecutivos de técnica y coreografía en tacón. Cupo limitado." },
-      { id: 5, name: "Bootcamp Hip Hop Fin de Semana", type: "workshop", price: 550, description: "Sábado y domingo de fundamentos y coreografía grupal." },
-      { id: 6, name: "Curso Digital: Coreografía Reggaetón", type: "digital_course", price: 299, description: "Video-curso descargable, acceso de por vida, nivel intermedio." },
-      { id: 7, name: "Curso Digital: Fundamentos de Popping", type: "digital_course", price: 249, description: "Video-curso descargable de aislamientos y control muscular." },
-      { id: 8, name: "Hoodie ABC Studio", type: "merch", price: 550, description: "Sudadera oversize con logo bordado.", variants: ["S","M","L","XL"] },
-      { id: 9, name: "Grip Socks ABC Studio", type: "merch", price: 180, description: "Calcetines antiderrapantes para heels y piso.", variants: ["S","M","L"] },
-      { id: 10, name: "Dance Bag ABC Studio", type: "merch", price: 420, description: "Bolsa deportiva impermeable, compartimento para tenis." }
-    ];
+    // Configuración de la API del Backend
+    const API_URL = 'http://localhost:4000/api/products';
+    let PRODUCTS = [];
 
     const TYPE_META = {
       drop_in: { label: "Clase Drop-In", color: "var(--volt)" },
@@ -188,7 +178,41 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
-    // Gestor de Carrito Sincronizado con localStorage
+    // 1. Carga dinámica desde PostgreSQL
+    async function loadProductsFromBackend() {
+      const skeletonGrid = document.getElementById("skeleton-grid");
+      const productGrid = document.getElementById("product-grid");
+
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        PRODUCTS = data.map(item => ({
+          id: item.id,
+          name: item.name,
+          type: item.type,
+          price: parseFloat(item.price),
+          category: item.category || 'General',
+          description: item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.',
+          variants: item.type === 'merch' ? ["S", "M", "L"] : null
+        }));
+
+        if (skeletonGrid) skeletonGrid.classList.add("hidden");
+        if (productGrid) productGrid.classList.remove("hidden");
+        renderProducts();
+      } catch (err) {
+        console.error('[Error fetching backend]:', err);
+        if (skeletonGrid) {
+          skeletonGrid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-red-400 font-mono text-sm">
+              Error al conectar con la API (http://localhost:4000). Asegúrate de que el backend esté corriendo con <code>node server.js</code>.
+            </div>`;
+        }
+      }
+    }
+
+    // 2. Gestor de Carrito Sincronizado
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
 
@@ -295,7 +319,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       return { show };
     })();
 
-    // Interacción de los Filtros
+    // 3. Filtros
     let currentFilter = new URLSearchParams(window.location.search).get("type") || "all";
 
     function renderProducts() {
@@ -355,7 +379,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       renderProducts();
     }
 
-    // Modal de Checkout con Mercado Pago
+    // 4. Modal Mercado Pago
     const modal = document.getElementById("checkout-modal");
     const modalTotal = document.getElementById("modal-total");
     const screenPay = document.getElementById("modal-screen-pay");
@@ -392,7 +416,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       Toast.show("✓ Orden guardada en base de datos.");
     });
 
-    // Event listeners generales
+    // 5. Event Listeners e Inicialización
     document.getElementById("cart-toggle").addEventListener("click", () => Cart.toggleDrawer(true));
     document.getElementById("cart-close").addEventListener("click", () => Cart.toggleDrawer(false));
     document.getElementById("cart-overlay").addEventListener("click", () => Cart.toggleDrawer(false));
@@ -401,12 +425,8 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       chip.addEventListener("click", () => setFilter(chip.dataset.type));
     });
 
-    // Inicialización
     setFilter(currentFilter);
-    setTimeout(() => {
-      document.getElementById("skeleton-grid").classList.add("hidden");
-      document.getElementById("product-grid").classList.remove("hidden");
-    }, 400);
+    loadProductsFromBackend();
     Cart.render();
   </script>
 </body>
