@@ -1,7 +1,19 @@
-const express = require("express");
-const router = express.Router();
-const { getAllProducts } = require("../controllers/products.controller");
+import { Router } from 'express';
+import { 
+  getAllProducts, 
+  getProductById, 
+  updateVariantStock, 
+  updateSessionSeats 
+} from '../controllers/products.controller.js';
 
-router.get("/", getAllProducts);
+const router = Router();
 
-module.exports = router;
+// Rutas públicas del catálogo
+router.get('/', getAllProducts);
+router.get('/:id', getProductById);
+
+// Rutas de administración para inventario y cupos
+router.patch('/variants/:id/stock', updateVariantStock);
+router.patch('/sessions/:id/seats', updateSessionSeats);
+
+export default router;
