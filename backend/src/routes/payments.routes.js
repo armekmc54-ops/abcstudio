@@ -4,14 +4,14 @@
 // negocio aquí a propósito, para que en la oral puedas señalar
 // "esta línea define el endpoint, la lógica vive en el controller".
 // -----------------------------------------------------------------------
-const express = require("express");
-const router = express.Router();
-const { createPreference, handleWebhook } = require("../controllers/payments.controller");
+import { Router } from 'express';
+// Si tienes payments.controller.js implementado:
+import { createPreference, handleWebhook } from '../controllers/payments.controller.js';
 
-// El frontend llama esto cuando el usuario da clic en "Pagar".
-router.post("/create-preference", createPreference);
+const router = Router();
 
-// Mercado Pago llama esto solo, cuando el estado de un pago cambia.
-router.post("/webhook", handleWebhook);
+// Rutas de pagos (Mercado Pago)
+router.post('/create-preference', createPreference || ((req, res) => res.json({ message: 'Create preference endpoint' })));
+router.post('/webhook', handleWebhook || ((req, res) => res.json({ message: 'Webhook endpoint' })));
 
-module.exports = router;
+export default router;
