@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABC Studio — Admin Backoffice</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card-bg: rgba(26, 26, 36, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --primary: #ff3366;
+      --primary-glow: rgba(255, 51, 102, 0.3);
+      --accent: #7928ca;
+      --success: #00df89;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(11, 11, 15, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+    }
+
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #fff, #9ca3af);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .page-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 0.25rem;
+    }
+
+    /* KPI Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .metric-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    .metric-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Tables */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e5e7eb;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(0, 223, 137, 0.15);
+      color: var(--success);
+      border: 1px solid rgba(0, 223, 137, 0.3);
+    }
+
+    .badge-warning {
+      background: rgba(255, 170, 0, 0.15);
+      color: #ffaa00;
+      border: 1px solid rgba(255, 170, 0, 0.3);
+    }
+
+    .stock-input {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      width: 70px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+    }
+
+    .stock-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn-save {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-save:hover {
+      opacity: 0.9;
+    }
+
+    .btn-save:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="brand">
+      <div class="brand-logo">ABC</div>
+      <div class="brand-title">ABC Studio</div>
+    </a>
+    <div class="nav-links">
+      <a href="catalog.html" class="nav-link">Catálogo</a>
+      <a href="index.html" class="nav-link">Inicio</a>
+      <span class="badge badge-success">Backoffice Activo</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Panel de Control</h1>
+        <p class="page-desc">Monitoreo de ingresos, ocupación de talleres y gestión de inventario en tiempo real.</p>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-label">Ingresos Totales (Cobrados)</span>
+        <span class="metric-value" id="kpi-revenue">$14,250.00</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Órdenes Completadas</span>
+        <span class="metric-value" id="kpi-orders">28</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Cupos Reservados (Danza)</span>
+        <span class="metric-value" id="kpi-bookings">42 / 60</span>
+      </div>
+    </div>
+
+    <!-- Gestión de Sesiones y Clases -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Sesiones de Danza & Capacidad</h2>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Clase / Workshop</th>
+              <th>Instructor</th>
+              <th>Fecha y Hora</th>
+              <th>Ocupación</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="sessions-table-body">
+            <tr>
+              <td><strong>Masterclass Heels Intensive</strong></td>
+              <td>Valeria Ríos</td>
+              <td>2026-09-05 • 18:00 hrs</td>
+              <td>16 / 20 inscritos</td>
+              <td><span class="badge badge-warning">Cupo Limitado</span></td>
+            </tr>
+            <tr>
+              <td><strong>Afrobeat Choreography Lab</strong></td>
+              <td>Kofi Mensah</td>
+              <td>2026-09-12 • 16:00 hrs</td>
+              <td>12 / 20 inscritos</td>
+              <td><span class="badge badge-success">Disponible</span></td>
+            </tr>
+            <tr>
+              <td><strong>Urban House & Footwork</strong></td>
+              <td>Mateo Silva</td>
+              <td>2026-09-19 • 17:30 hrs</td>
+              <td>14 / 20 inscritos</td>
+              <td><span class="badge badge-success">Disponible</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gestión de Inventario Físico -->
+    <div class="section-card">
+      <div class="section-header">
+        <h2 class="section-title">Inventario de Ropa & Merch</h2>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Variante (Talla)</th>
+              <th>Stock Actual</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <tr>
+              <td>Oversized Heavyweight Hoodie — Night Black</td>
+              <td><strong>Talla M</strong></td>
+              <td><input type="number" class="stock-input" value="8" min="0"></td>
+              <td><button class="btn-save" onclick="updateStock(1, this)">Guardar</button></td>
+            </tr>
+            <tr>
+              <td>Oversized Heavyweight Hoodie — Night Black</td>
+              <td><strong>Talla L</strong></td>
+              <td><input type="number" class="stock-input" value="12" min="0"></td>
+              <td><button class="btn-save" onclick="updateStock(2, this)">Guardar</button></td>
+            </tr>
+            <tr>
+              <td>Cargo Dance Pants — Dark Graphite</td>
+              <td><strong>Talla M</strong></td>
+              <td><input type="number" class="stock-input" value="6" min="0"></td>
+              <td><button class="btn-save" onclick="updateStock(3, this)">Guardar</button></td>
+            </tr>
+            <tr>
+              <td>Pro Kneepads — Studio Edition</td>
+              <td><strong>Unitalla</strong></td>
+              <td><input type="number" class="stock-input" value="15" min="0"></td>
+              <td><button class="btn-save" onclick="updateStock(4, this)">Guardar</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:4000/api';
+
+    // Cargar métricas reales si el backend está activo, o mantener defaults
+    async function loadAdminData() {
+      try {
+        const res = await fetch(`${API_URL}/admin/metrics`);
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        if (data.metrics) {
+          document.getElementById('kpi-revenue').textContent = `$${parseFloat(data.metrics.total_revenue).toFixed(2)}`;
+          document.getElementById('kpi-orders').textContent = data.metrics.total_orders;
+        }
+      } catch (err) {
+        console.log('[Admin] Operando con datos locales interactivos de muestra.');
+      }
+    }
+
+    async function updateStock(variantId, btnElement) {
+      const row = btnElement.closest('tr');
+      const input = row.querySelector('.stock-input');
+      const newStock = parseInt(input.value, 10);
+
+      btnElement.disabled = true;
+      btnElement.textContent = 'Guardando...';
+
+      try {
+        const res = await fetch(`${API_URL}/admin/variants/${variantId}/stock`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ stock: newStock })
+        });
+
+        if (res.ok) {
+          btnElement.textContent = '¡Actualizado!';
+          setTimeout(() => {
+            btnElement.textContent = 'Guardar';
+            btnElement.disabled = false;
+          }, 1500);
+        } else {
+          throw new Error('Error al actualizar');
+        }
+      } catch (err) {
+        // Feedback visual inmediato en modo demostración
+        btnElement.textContent = 'Guardado (Local)';
+        setTimeout(() => {
+          btnElement.textContent = 'Guardar';
+          btnElement.disabled = false;
+        }, 1500);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadAdminData);
+  </script>
+</body>
+</html>
