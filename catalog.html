@@ -166,7 +166,21 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
-    // 1. Carga dinámica desde el Backend
+    // 10 Productos oficiales de respaldo (Fallback para universidad / GitHub Pages)
+    const FALLBACK_PRODUCTS = [
+      { id: 1, name: "Pase Drop-In Urbano", type: "drop_in", price: 180.00, category: "Clases", description: "Acceso individual a 1 clase presencial de ritmos urbanos o hip-hop.", variants: null },
+      { id: 2, name: "Pase Drop-In Contemporáneo", type: "drop_in", price: 180.00, category: "Clases", description: "Acceso a 1 sesión técnica de danza contemporánea y piso móvil.", variants: null },
+      { id: 3, name: "Paquete 4 Clases", type: "pack", price: 650.00, category: "Paquetes", description: "Válido por 30 días naturales. Elige cualquier estilo presencial.", variants: null },
+      { id: 4, name: "Paquete 8 Clases", type: "pack", price: 1150.00, category: "Paquetes", description: "Paquete flexible para entrenamiento continuo en el estudio.", variants: null },
+      { id: 5, name: "Membresía Ilimitada Mensual", type: "membership", price: 1850.00, category: "Membresías", description: "Acceso ilimitado a todas las clases regulares presenciales del mes.", variants: null },
+      { id: 6, name: "Taller Intensivo Heels", type: "workshop", price: 650.00, category: "Talleres", description: "Workshop intensivo de 3 horas de técnica, líneas y coreografía en tacones.", variants: null },
+      { id: 7, name: "Masterclass Coreografía Invitada", type: "workshop", price: 500.00, category: "Talleres", description: "Sesión especial de técnica y montaje impartida por maestro invitado.", variants: null },
+      { id: 8, name: "Curso Digital: Fundamentos Urbanos", type: "digital_course", price: 350.00, category: "Digital", description: "8 módulos en video HD con ejercicios de disociación y groove para entrenar en casa.", variants: null },
+      { id: 9, name: "Hoodie ABC Oversized", type: "merch", price: 720.00, category: "Mercancía", description: "Sudadera de algodón pesado corte oversized con serigrafía reflectiva.", variants: ["S", "M", "L"] },
+      { id: 10, name: "Playera ABC Graphic Tee", type: "merch", price: 380.00, category: "Mercancía", description: "Playera regular fit 100% algodón prelavado con diseño frontal del estudio.", variants: ["S", "M", "L"] }
+    ];
+
+    // 1. Carga dinámica con respaldo automático
     async function loadProductsFromBackend() {
       const skeletonGrid = document.getElementById("skeleton-grid");
       const productGrid = document.getElementById("product-grid");
@@ -182,21 +196,16 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           type: item.type,
           price: parseFloat(item.price),
           category: item.category || 'General',
-          description: item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.',
+          description: item.description || (item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.'),
           variants: item.type === 'merch' ? ["S", "M", "L"] : null
         }));
-
+      } catch (err) {
+        console.warn('[Backend local offline - Usando catálogo de respaldo]:', err.message);
+        PRODUCTS = FALLBACK_PRODUCTS;
+      } finally {
         if (skeletonGrid) skeletonGrid.classList.add("hidden");
         if (productGrid) productGrid.classList.remove("hidden");
         renderProducts();
-      } catch (err) {
-        console.error('[Error fetching backend]:', err);
-        if (skeletonGrid) {
-          skeletonGrid.innerHTML = `
-            <div class="col-span-full text-center py-12 text-red-400 font-mono text-sm">
-              Error al conectar con la API (http://localhost:4000). Asegúrate de que el backend esté corriendo con <code>node server.js</code>.
-            </div>`;
-        }
       }
     }
 
