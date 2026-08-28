@@ -4,8 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Catálogo — ABC Studio</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#C6FF3D;
@@ -433,7 +434,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       renderProducts();
     }
 
-    // 4. Modal Checkout con Tarjeta y Generación de Recibo
+    // Inicializar EmailJS con tu Public Key
+    emailjs.init("jnFg7r-jjzdJHXe6b");
+
+    // 4. Modal Checkout con Tarjeta, EmailJS y Generación de Recibo
     const modal = document.getElementById("checkout-modal");
     const modalTotal = document.getElementById("modal-total");
     const screenPay = document.getElementById("modal-screen-pay");
@@ -455,34 +459,54 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
     document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
 
-    // Procesar pago con tarjeta y crear comprobante desglosado
-    function handleCardSubmit(e) {
+    // Procesar pago con tarjeta, enviar correo real y mostrar recibo
+    async function handleCardSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById("confirm-pay-btn");
       const email = document.getElementById("payer-email-input").value;
+      const payerName = document.getElementById("card-holder").value;
       const totalFormatted = `$${Cart.total().toFixed(2)} MXN`;
+      const orderId = 'ABC-MP-' + Math.floor(100000 + Math.random() * 900000);
 
-      btn.textContent = "Procesando pago con Mercado Pago...";
+      // Texto desglosado con los productos comprados
+      const itemsListText = Cart.items()
+        .map(i => `• ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''} - $${(i.price * i.qty).toFixed(2)} MXN`)
+        .join("\n");
+
+      btn.textContent = "Procesando pago y enviando recibo...";
       btn.disabled = true;
 
-      setTimeout(() => {
-        document.getElementById("receipt-id").textContent = 'ABC-MP-' + Math.floor(100000 + Math.random() * 900000);
-        document.getElementById("receipt-email").textContent = email;
-        document.getElementById("receipt-total").textContent = totalFormatted;
+      try {
+        // Disparo real del correo a tu Gmail
+        await emailjs.send("service_v4vd0mk", "2bneqvb", {
+          to_email: email,
+          payer_name: payerName,
+          order_id: orderId,
+          total_amount: totalFormatted,
+          items_list: itemsListText
+        });
+        console.log("✓ Correo enviado con éxito.");
+      } catch (err) {
+        console.warn("Aviso EmailJS:", err);
+      }
 
-        const listContainer = document.getElementById("receipt-items-list");
-        listContainer.innerHTML = Cart.items().map(i => `
-          <div class="flex justify-between">
-            <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
-            <span>$${(i.price * i.qty).toFixed(2)}</span>
-          </div>
-        `).join("");
+      // Desglose en pantalla
+      document.getElementById("receipt-id").textContent = orderId;
+      document.getElementById("receipt-email").textContent = email;
+      document.getElementById("receipt-total").textContent = totalFormatted;
 
-        screenPay.classList.add("hidden");
-        screenSuccess.classList.remove("hidden");
-        btn.textContent = "Procesar Pago Seguro";
-        btn.disabled = false;
-      }, 1000);
+      const listContainer = document.getElementById("receipt-items-list");
+      listContainer.innerHTML = Cart.items().map(i => `
+        <div class="flex justify-between">
+          <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
+          <span>$${(i.price * i.qty).toFixed(2)}</span>
+        </div>
+      `).join("");
+
+      screenPay.classList.add("hidden");
+      screenSuccess.classList.remove("hidden");
+      btn.textContent = "Procesar Pago Seguro";
+      btn.disabled = false;
     }
 
     // 5. Event Listeners e Inicialización
