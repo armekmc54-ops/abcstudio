@@ -148,10 +148,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
       <!-- Vista 2: Mensaje de Éxito -->
       <div id="modal-screen-success" class="hidden text-center py-4">
+        
         <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-3 text-2xl font-bold">✓</div>
         <h4 class="font-display text-lg text-green-400 mb-1">¡Pago Aprobado con Éxito!</h4>
         <p class="text-xs text-gray-300 mb-4">Orden registrada en base de datos.</p>
-        <button id="finish-btn" class="btn btn-primary w-full py-2 text-xs">Finalizar y Vaciar Carrito</button>
+        <button onclick="finishCheckout()" id="finish-btn" class="btn btn-primary w-full py-2 text-xs">Finalizar y Vaciar Carrito</button>
       </div>
     </div>
   </div>
@@ -451,6 +452,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     setFilter(currentFilter);
     loadProductsFromBackend();
     Cart.render();
+
+    function finishCheckout() {
+  Cart.clear();
+  document.getElementById("checkout-modal").classList.remove("open");
+  Toast.show("✓ Orden completada y carrito limpio");
+}
   </script>
 </body>
 </html>
