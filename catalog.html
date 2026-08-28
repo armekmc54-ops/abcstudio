@@ -145,7 +145,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt" />
           </div>
 
-          <div>
+         <div>
             <label class="block mb-1 text-gray-400">Número de Tarjeta</label>
             <input type="text" id="card-number" required maxlength="19" placeholder="4242 4242 4242 4242" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
           </div>
@@ -158,7 +158,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block mb-1 text-gray-400">Vencimiento (MM/AA)</label>
-              <input type="text" id="card-exp" required maxlength="5" placeholder="12/28" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
+              <input type="text" id="card-exp" required maxlength="5" placeholder="MM/AA" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
             </div>
             <div>
               <label class="block mb-1 text-gray-400">CVV</label>
@@ -502,6 +502,29 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       Cart.clear();
       modal.classList.remove("open");
       Toast.show("✓ Compra finalizada. Recibo generado.");
+    }
+
+    // Auto-formateo para número de tarjeta (espacios cada 4 dígitos)
+    const cardInput = document.getElementById("card-number");
+    if (cardInput) {
+      cardInput.addEventListener("input", (e) => {
+        let val = e.target.value.replace(/\D/g, "").substring(0, 16);
+        let formatted = val.match(/.{1,4}/g)?.join(" ") || val;
+        e.target.value = formatted;
+      });
+    }
+
+    // Auto-formateo para vencimiento (agrega '/' automáticamente)
+    const expInput = document.getElementById("card-exp");
+    if (expInput) {
+      expInput.addEventListener("input", (e) => {
+        let val = e.target.value.replace(/\D/g, "").substring(0, 4);
+        if (val.length >= 3) {
+          e.target.value = val.substring(0, 2) + "/" + val.substring(2, 4);
+        } else {
+          e.target.value = val;
+        }
+      });
     }
   </script>
 </body>
