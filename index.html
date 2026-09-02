@@ -141,52 +141,34 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <span class="text-xs font-mono tracking-widest text-blue-400 uppercase">Mercado Pago Gateway</span>
       </div>
 
-      <!-- Pantalla 1: Formulario de Pago con Tarjeta -->
-      <div id="modal-screen-pay">
-        <h3 class="font-display text-xl mb-1">Pago con Tarjeta de Crédito/Débito</h3>
-        <p class="text-xs mb-4" style="color:var(--muted)">Transacción segura procesada por Mercado Pago.</p>
-        
-        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
-          <div class="flex justify-between text-xs text-gray-400 mb-1">
-            <span>Receptor oficial:</span>
-            <span class="text-white font-mono">ABC Studio México</span>
-          </div>
-          <div class="flex justify-between text-sm font-semibold">
-            <span>Total a transferir:</span>
-            <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
-          </div>
-        </div>
+<!-- Pantalla 1: Formulario de Pago con Tarjeta / PayPal -->
+  <div id="modal-screen-pay">
 
-        <form id="payment-form" onsubmit="handleCardSubmit(event)" class="space-y-3 text-xs">
-          <div>
-            <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo)</label>
-            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt" />
-          </div>
+    <h3 class="font-display text-xl mb-1">Pago Seguro con PayPal</h3>
+    <p class="text-xs mb-4" style="color:var(--muted)">Transacción protegida procesada oficialmente por PayPal.</p>
 
-          <div>
-            <label class="block mb-1 text-gray-400">Número de Tarjeta</label>
-            <input type="text" id="card-number" required maxlength="19" placeholder="4242 4242 4242 4242" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
-          </div>
-
-          <div>
-            <label class="block mb-1 text-gray-400">Nombre del Titular</label>
-            <input type="text" id="card-holder" required placeholder="Como aparece en el plástico" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt uppercase" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block mb-1 text-gray-400">Vencimiento (MM/AA)</label>
-              <input type="text" id="card-exp" required maxlength="5" placeholder="MM/AA" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
-            </div>
-            <div>
-              <label class="block mb-1 text-gray-400">CVV</label>
-              <input type="password" id="card-cvv" required maxlength="4" placeholder="123" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
-            </div>
-          </div>
-
-          <button type="submit" id="confirm-pay-btn" class="btn btn-primary w-full py-3 mt-2">Procesar Pago Seguro</button>
-        </form>
+    <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
+      <div class="flex justify-between text-xs text-gray-400 mb-1">
+        <span>Receptor oficial:</span>
+        <span class="text-white font-mono">ABC Studio México</span>
       </div>
+      <div class="flex justify-between text-sm font-semibold">
+        <span>Total a transferir:</span>
+        <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
+      </div>
+    </div>
+
+    <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
+      <div>
+        <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo oficial)</label>
+        <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-volt" />
+      </div>
+
+      <!-- Contenedor Oficial ÚNICO de Botones PayPal -->
+      <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
+    </form>
+
+  </div>     
 
       <!-- Pantalla 2: Recibo Desglosado y Envío de Correo -->
       <div id="modal-screen-success" class="hidden text-left py-2">
