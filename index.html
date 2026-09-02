@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>ABC Studio — Tienda en línea</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
@@ -103,7 +104,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   <section class="max-w-5xl mx-auto px-6 md:px-10 pb-24">
     <div class="flex items-end justify-between mb-6">
       <h2 class="font-display text-2xl md:text-3xl">Destacados de la Academia</h2>
-      <a href="catalog.html?type=all" class="text-sm font-semibold hover:underline" style="color:var(--volt)">Ver todos los 10 productos →</a>
+      <a href="catalog.html?type=all" class="text-sm font-semibold hover:underline" style="color:var(--volt)">Ver todos los 13 productos →</a>
     </div>
     <div id="featured-grid" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5"></div>
   </section>
@@ -129,47 +130,94 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </aside>
 
   <!-- Modal Checkout Mercado Pago -->
+  <!-- Modal Interactivo de Checkout con Tarjeta y Recibo -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
-      <div class="flex items-center gap-2 mb-4">
-        <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
-        <span class="text-xs font-mono tracking-widest text-blue-400 uppercase">Mercado Pago Sandbox Checkout</span>
-      </div>
-      <h3 class="font-display text-xl mb-1">Confirmar Orden</h3>
-      <p class="text-xs mb-4" style="color:var(--muted)">Simulador de pasarela de pagos integrada para ABC Studio.</p>
       
-      <div class="bg-black/40 rounded-xl p-4 mb-4 border border-[#232327]">
-        <div class="flex justify-between text-xs mb-2 text-gray-400">
-          <span>ID de Preferencia:</span>
-          <span class="font-mono text-blue-400">PREF-ABC-849204</span>
-        </div>
-        <div class="flex justify-between text-sm font-semibold">
-          <span>Monto total:</span>
-          <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
-        </div>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
+        <span class="text-xs font-mono tracking-widest text-blue-400 uppercase">Mercado Pago Gateway</span>
       </div>
 
+      <!-- Pantalla 1: Formulario de Pago con Tarjeta -->
       <div id="modal-screen-pay">
-        <div class="space-y-3 text-xs mb-5">
-          <div>
-            <label class="block mb-1 text-gray-400">Correo del alumno</label>
-            <input type="email" value="alumno.demo@abcstudio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none" />
+        <h3 class="font-display text-xl mb-1">Pago con Tarjeta de Crédito/Débito</h3>
+        <p class="text-xs mb-4" style="color:var(--muted)">Transacción segura procesada por Mercado Pago.</p>
+        
+        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
+          <div class="flex justify-between text-xs text-gray-400 mb-1">
+            <span>Receptor oficial:</span>
+            <span class="text-white font-mono">ABC Studio México</span>
           </div>
-          <div>
-            <label class="block mb-1 text-gray-400">Tarjeta de prueba (Visa Sandbox)</label>
-            <input type="text" value="•••• •••• •••• 4242" disabled class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-gray-400 font-mono" />
+          <div class="flex justify-between text-sm font-semibold">
+            <span>Total a transferir:</span>
+            <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
           </div>
         </div>
-        <button id="confirm-pay-btn" class="btn btn-primary w-full py-3">Autorizar Pago Sandbox</button>
+
+        <form id="payment-form" onsubmit="handleCardSubmit(event)" class="space-y-3 text-xs">
+          <div>
+            <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo)</label>
+            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt" />
+          </div>
+
+          <div>
+            <label class="block mb-1 text-gray-400">Número de Tarjeta</label>
+            <input type="text" id="card-number" required maxlength="19" placeholder="4242 4242 4242 4242" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
+          </div>
+
+          <div>
+            <label class="block mb-1 text-gray-400">Nombre del Titular</label>
+            <input type="text" id="card-holder" required placeholder="Como aparece en el plástico" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white outline-none focus:border-volt uppercase" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block mb-1 text-gray-400">Vencimiento (MM/AA)</label>
+              <input type="text" id="card-exp" required maxlength="5" placeholder="MM/AA" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
+            </div>
+            <div>
+              <label class="block mb-1 text-gray-400">CVV</label>
+              <input type="password" id="card-cvv" required maxlength="4" placeholder="123" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-white font-mono outline-none focus:border-volt" />
+            </div>
+          </div>
+
+          <button type="submit" id="confirm-pay-btn" class="btn btn-primary w-full py-3 mt-2">Procesar Pago Seguro</button>
+        </form>
       </div>
 
-      <div id="modal-screen-success" class="hidden text-center py-4">
-        <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-3 text-2xl font-bold">✓</div>
-        <h4 class="font-display text-lg text-green-400 mb-1">¡Pago Aprobado con Éxito!</h4>
-        <p class="text-xs text-gray-300 mb-4">Webhook recibido: La orden se actualizó a <span class="font-mono text-green-400">PAID</span> y los accesos han sido confirmados.</p>
-        <button id="finish-btn" class="btn btn-ghost btn-sm w-full">Finalizar y Vaciar Carrito</button>
+      <!-- Pantalla 2: Recibo Desglosado y Envío de Correo -->
+      <div id="modal-screen-success" class="hidden text-left py-2">
+        <div class="text-center mb-4">
+          <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-2 text-xl font-bold">✓</div>
+          <h4 class="font-display text-lg text-green-400">¡Pago Exitoso!</h4>
+          <p class="text-xs text-gray-400">Comprobante de compra oficial emitido.</p>
+        </div>
+
+        <div class="bg-[#121215] border border-[#232327] rounded-xl p-4 text-xs space-y-2 mb-4 font-mono">
+          <div class="flex justify-between border-b border-[#232327] pb-2">
+            <span class="text-gray-400">Folio:</span>
+            <span id="receipt-id" class="text-white">ABC-MP-000000</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-gray-400">Enviado a:</span>
+            <span id="receipt-email" class="text-volt truncate max-w-[200px]">alumno@correo.com</span>
+          </div>
+          <div class="border-t border-[#232327] pt-2">
+            <span class="text-gray-400 block mb-1">Conceptos pagados:</span>
+            <div id="receipt-items-list" class="space-y-1 text-gray-200"></div>
+          </div>
+          <div class="flex justify-between border-t border-[#232327] pt-2 font-bold text-sm">
+            <span>Total Pagado:</span>
+            <span id="receipt-total" style="color:var(--volt)">$0.00 MXN</span>
+          </div>
+        </div>
+
+        <p class="text-[11px] text-center text-gray-400 mb-4">Se ha enviado una copia digital de tu recibo a tu correo.</p>
+        <button onclick="finishCheckout()" class="btn btn-primary w-full py-2 text-xs">Finalizar y Vaciar Carrito</button>
       </div>
+
     </div>
   </div>
 
@@ -180,11 +228,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </footer>
 
   <script>
-    const FEATURED_PRODUCTS = [
-      { id: 1, name: "Pase Drop-In Urbano", type: "drop_in", price: 180, description: "Entra a una sola clase de hip hop, reggaetón o house." },
-      { id: 4, name: "Taller Intensivo Heels (3 días)", type: "workshop", price: 650, description: "Tres días consecutivos de técnica y coreografía en tacón." },
-      { id: 6, name: "Curso Digital: Coreografía Reggaetón", type: "digital_course", price: 299, description: "Video-curso descargable, acceso de por vida." },
-      { id: 8, name: "Hoodie ABC Studio", type: "merch", price: 550, description: "Sudadera oversize con logo bordado.", variants: ["S","M","L","XL"] }
+    emailjs.init("jnFg7r-jjzdJHXe6b");
+   const FEATURED_PRODUCTS = [
+      { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." },
+      { id: 4, name: "Curso Urbanos Avanzados", type: "workshop", price: 650, description: "Curso de 4 clases con 4 diferentes maestros invitados." },
+      { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, description: "Pase individual para 1 sesión de danza contemporánea." },
+      { id: 9, name: "Sudadera Hoodie ABC", type: "merch", price: 300, description: "Sudadera oficial oversize con diseño reflectivo ABC Studio." }
     ];
 
     const TYPE_META = {
@@ -321,47 +370,101 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     });
 
     // Modal Mercado Pago
-    const modal = document.getElementById("checkout-modal");
-    const modalTotal = document.getElementById("modal-total");
-    const screenPay = document.getElementById("modal-screen-pay");
-    const screenSuccess = document.getElementById("modal-screen-success");
+   const modal = document.getElementById("checkout-modal");
+const modalTotal = document.getElementById("modal-total");
+const screenPay = document.getElementById("modal-screen-pay");
+const screenSuccess = document.getElementById("modal-screen-success");
 
-    document.getElementById("checkout-btn").addEventListener("click", () => {
-      if (Cart.items().length === 0) {
-        Toast.show("Tu carrito está vacío.");
-        return;
-      }
-      modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
-      screenPay.classList.remove("hidden");
-      screenSuccess.classList.add("hidden");
-      Cart.toggleDrawer(false);
-      modal.classList.add("open");
+document.getElementById("checkout-btn").addEventListener("click", () => {
+  if (Cart.items().length === 0) {
+    Toast.show("Tu carrito está vacío.");
+    return;
+  }
+  modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
+
+  screenPay.classList.remove("hidden");
+  screenSuccess.classList.add("hidden");
+
+  Cart.toggleDrawer(false);
+  modal.classList.add("open");
+});
+
+document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
+
+async function handleCardSubmit(e) {
+  e.preventDefault();
+  const btn = document.getElementById("confirm-pay-btn");
+  const email = document.getElementById("payer-email-input").value;
+  const payerName = document.getElementById("card-holder").value;
+  const totalFormatted = `$${Cart.total().toFixed(2)} MXN`;
+  const orderId = 'ABC-MP-' + Math.floor(100000 + Math.random() * 900000);
+
+  const itemsListText = Cart.items()
+    .map(i => `• ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''} - $${(i.price * i.qty).toFixed(2)} MXN`)
+    .join("\n");
+
+  btn.textContent = "Procesando pago y enviando recibo...";
+  btn.disabled = true;
+
+  try {
+    await emailjs.send("service_v4vd0mk", "template_uldofor", {
+      to_email: email,
+      payer_name: payerName,
+      order_id: orderId,
+      total_amount: totalFormatted,
+      items_list: itemsListText
     });
+    console.log("✓ Correo enviado con éxito.");
+  } catch (err) {
+    console.warn("Aviso EmailJS:", err);
+  }
 
-    document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
-    document.getElementById("confirm-pay-btn").addEventListener("click", () => {
-      const btn = document.getElementById("confirm-pay-btn");
-      btn.textContent = "Procesando pago con Mercado Pago...";
-      btn.disabled = true;
-      setTimeout(() => {
-        screenPay.classList.add("hidden");
-        screenSuccess.classList.remove("hidden");
-        btn.textContent = "Autorizar Pago Sandbox";
-        btn.disabled = false;
-      }, 1200);
-    });
+  document.getElementById("receipt-id").textContent = orderId;
+  document.getElementById("receipt-email").textContent = email;
+  document.getElementById("receipt-total").textContent = totalFormatted;
 
-    document.getElementById("finish-btn").addEventListener("click", () => {
-      Cart.clear();
-      modal.classList.remove("open");
-      Toast.show("✓ Orden completada exitosamente.");
-    });
+  const listContainer = document.getElementById("receipt-items-list");
+  listContainer.innerHTML = Cart.items().map(i => `
+    <div class="flex justify-between">
+      <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
+      <span>$${(i.price * i.qty).toFixed(2)}</span>
+    </div>
+  `).join("");
 
-    document.getElementById("cart-toggle").addEventListener("click", () => Cart.toggleDrawer(true));
-    document.getElementById("cart-close").addEventListener("click", () => Cart.toggleDrawer(false));
-    document.getElementById("cart-overlay").addEventListener("click", () => Cart.toggleDrawer(false));
+  screenPay.classList.add("hidden");
+  screenSuccess.classList.remove("hidden");
+  btn.textContent = "Procesar Pago Seguro";
+  btn.disabled = false;
+}
 
-    Cart.render();
+function finishCheckout() {
+  Cart.clear();
+  modal.classList.remove("open");
+  Toast.show("✓ Compra finalizada. Recibo generado.");
+}
+
+// Auto-formato de tarjeta
+const cardInput = document.getElementById("card-number");
+if (cardInput) {
+  cardInput.addEventListener("input", (e) => {
+    let val = e.target.value.replace(/\D/g, "").substring(0, 16);
+    let formatted = val.match(/.{1,4}/g)?.join(" ") || val;
+    e.target.value = formatted;
+  });
+}
+
+// Auto-formato de expiración MM/AA
+const expInput = document.getElementById("card-exp");
+if (expInput) {
+  expInput.addEventListener("input", (e) => {
+    let val = e.target.value.replace(/\D/g, "").substring(0, 4);
+    if (val.length >= 3) {
+      e.target.value = val.substring(0, 2) + "/" + val.substring(2, 4);
+    } else {
+      e.target.value = val;
+    }
+  });
+}
   </script>
 </body>
 </html>
