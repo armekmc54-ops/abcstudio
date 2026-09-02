@@ -126,7 +126,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <span style="color:var(--muted)">Total a Pagar</span>
         <span id="cart-total" class="font-bold text-base" style="color:var(--volt)">$0.00 MXN</span>
       </div>
-      <button id="checkout-btn" class="btn btn-primary w-full shadow-lg">Pagar con Mercado Pago</button>
+      <button id="checkout-btn" class="btn btn-primary w-full shadow-lg">Proceder al Pago Seguro</button>
     </div>
   </aside>
 
@@ -138,7 +138,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       
       <div class="flex items-center gap-2 mb-3">
         <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
-        <span class="text-xs font-mono tracking-widest text-blue-400 uppercase">Mercado Pago Gateway</span>
+        <span class="text-xs font-mono tracking-widest text-volt uppercase">PayPal Checkout Gateway</span>
       </div>
 
 <!-- Pantalla 1: Formulario de Pago con Tarjeta / PayPal -->
@@ -352,102 +352,106 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       grid.appendChild(card);
     });
 
-    // Modal Mercado Pago
-   const modal = document.getElementById("checkout-modal");
-const modalTotal = document.getElementById("modal-total");
-const screenPay = document.getElementById("modal-screen-pay");
-const screenSuccess = document.getElementById("modal-screen-success");
+    // Modal Checkout & Pasarela Oficial PayPal
+    const modal = document.getElementById("checkout-modal");
+    const modalTotal = document.getElementById("modal-total");
+    const screenPay = document.getElementById("modal-screen-pay");
+    const screenSuccess = document.getElementById("modal-screen-success");
 
-document.getElementById("checkout-btn").addEventListener("click", () => {
-  if (Cart.items().length === 0) {
-    Toast.show("Tu carrito está vacío.");
-    return;
-  }
-  modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
+    function renderPayPalButtons() {
+      const container = document.getElementById("paypal-button-container");
+      if (!container) return;
+      container.innerHTML = "";
 
-  screenPay.classList.remove("hidden");
-  screenSuccess.classList.add("hidden");
+      if (window.paypal) {
+        paypal.Buttons({
+          style: {
+            layout: 'vertical',
+            color:  'gold',
+            shape:  'rect',
+            label:  'paypal'
+          },
+          createOrder: function(data, actions) {
+            return actions.order.create({
+              purchase_units: [{
+                description: "Compra oficial en ABC Studio",
+                amount: {
+                  currency_code: "MXN",
+                  value: Cart.total().toFixed(2)
+                }
+              }]
+            });
+          },
+          onApprove: async function(data, actions) {
+            const order = await actions.order.capture();
+            const emailInput = document.getElementById("payer-email-input")?.value;
+            const customerEmail = emailInput || (order.payer && order.payer.email_address) || "cliente@abcstudio.com";
+            const payerName = (order.payer && order.payer.name && order.payer.name.given_name) || "Alumno ABC";
+            const orderId = order.id || ("ABC-PP-" + Math.floor(100000 + Math.random() * 900000));
+            const totalFormatted = `$${Cart.total().toFixed(2)} MXN`;
 
-  Cart.toggleDrawer(false);
-  modal.classList.add("open");
-});
+            const itemsListText = Cart.items()
+              .map(i => `• ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''} - $${(i.price * i.qty).toFixed(2)} MXN`)
+              .join("\n");
 
-document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
+            try {
+              await emailjs.send("service_v4vd0mk", "template_uldofor", {
+                to_email: customerEmail,
+                payer_name: payerName,
+                order_id: orderId,
+                total_amount: totalFormatted,
+                items_list: itemsListText
+              });
+              console.log("✓ Comprobante enviado por EmailJS.");
+            } catch (err) {
+              console.warn("Aviso EmailJS:", err);
+            }
 
-async function handleCardSubmit(e) {
-  e.preventDefault();
-  const btn = document.getElementById("confirm-pay-btn");
-  const email = document.getElementById("payer-email-input").value;
-  const payerName = document.getElementById("card-holder").value;
-  const totalFormatted = `$${Cart.total().toFixed(2)} MXN`;
-  const orderId = 'ABC-MP-' + Math.floor(100000 + Math.random() * 900000);
+            document.getElementById("receipt-id").textContent = orderId;
+            document.getElementById("receipt-email").textContent = customerEmail;
+            document.getElementById("receipt-total").textContent = totalFormatted;
 
-  const itemsListText = Cart.items()
-    .map(i => `• ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''} - $${(i.price * i.qty).toFixed(2)} MXN`)
-    .join("\n");
+            const listContainer = document.getElementById("receipt-items-list");
+            listContainer.innerHTML = Cart.items().map(i => `
+              <div class="flex justify-between">
+                <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
+                <span>$${(i.price * i.qty).toFixed(2)}</span>
+              </div>
+            `).join("");
 
-  btn.textContent = "Procesando pago y enviando recibo...";
-  btn.disabled = true;
-
-  try {
-    await emailjs.send("service_v4vd0mk", "template_uldofor", {
-      to_email: email,
-      payer_name: payerName,
-      order_id: orderId,
-      total_amount: totalFormatted,
-      items_list: itemsListText
-    });
-    console.log("✓ Correo enviado con éxito.");
-  } catch (err) {
-    console.warn("Aviso EmailJS:", err);
-  }
-
-  document.getElementById("receipt-id").textContent = orderId;
-  document.getElementById("receipt-email").textContent = email;
-  document.getElementById("receipt-total").textContent = totalFormatted;
-
-  const listContainer = document.getElementById("receipt-items-list");
-  listContainer.innerHTML = Cart.items().map(i => `
-    <div class="flex justify-between">
-      <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
-      <span>$${(i.price * i.qty).toFixed(2)}</span>
-    </div>
-  `).join("");
-
-  screenPay.classList.add("hidden");
-  screenSuccess.classList.remove("hidden");
-  btn.textContent = "Procesar Pago Seguro";
-  btn.disabled = false;
-}
-
-function finishCheckout() {
-  Cart.clear();
-  modal.classList.remove("open");
-  Toast.show("✓ Compra finalizada. Recibo generado.");
-}
-
-// Auto-formato de tarjeta
-const cardInput = document.getElementById("card-number");
-if (cardInput) {
-  cardInput.addEventListener("input", (e) => {
-    let val = e.target.value.replace(/\D/g, "").substring(0, 16);
-    let formatted = val.match(/.{1,4}/g)?.join(" ") || val;
-    e.target.value = formatted;
-  });
-}
-
-// Auto-formato de expiración MM/AA
-const expInput = document.getElementById("card-exp");
-if (expInput) {
-  expInput.addEventListener("input", (e) => {
-    let val = e.target.value.replace(/\D/g, "").substring(0, 4);
-    if (val.length >= 3) {
-      e.target.value = val.substring(0, 2) + "/" + val.substring(2, 4);
-    } else {
-      e.target.value = val;
+            screenPay.classList.add("hidden");
+            screenSuccess.classList.remove("hidden");
+          },
+          onError: function(err) {
+            console.error("Error PayPal:", err);
+          }
+        }).render('#paypal-button-container');
+      }
     }
-  });
-}
+
+    document.getElementById("checkout-btn").addEventListener("click", () => {
+      if (Cart.items().length === 0) {
+        Toast.show("Tu carrito está vacío.");
+        return;
+      }
+      modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
+
+      screenPay.classList.remove("hidden");
+      screenSuccess.classList.add("hidden");
+
+      Cart.toggleDrawer(false);
+      modal.classList.add("open");
+
+      renderPayPalButtons();
+    });
+
+    document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
+
+    function finishCheckout() {
+      Cart.clear();
+      modal.classList.remove("open");
+      Toast.show("✓ Compra finalizada. Recibo generado.");
+    }
   </script>
 </body>
 </html>
