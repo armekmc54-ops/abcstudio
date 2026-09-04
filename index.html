@@ -130,7 +130,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
-  <!-- Modal Checkout Mercado Pago -->
   <!-- Modal Interactivo de Checkout con Tarjeta y Recibo -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
@@ -451,6 +450,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       modal.classList.remove("open");
       Toast.show("✓ Compra finalizada. Recibo generado.");
     }
+
+    // Control de apertura y cierre del Carrito Lateral
+    document.getElementById("cart-toggle")?.addEventListener("click", () => Cart.toggleDrawer(true));
+    document.getElementById("cart-close")?.addEventListener("click", () => Cart.toggleDrawer(false));
+    document.getElementById("cart-overlay")?.addEventListener("click", () => Cart.toggleDrawer(false));
+
+    // Render inicial del carrito al cargar la página
+    Cart.render();
   </script>
 </body>
 </html>
