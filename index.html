@@ -231,6 +231,32 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
+<!-- Modal Selector de Cursos para Combos en Index -->
+  <div id="bundle-modal" class="modal-overlay">
+    <div class="modal-box p-6 relative">
+      <button onclick="closeBundleModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="type-badge bg-[--volt] text-[--ink]">Promo Cursos</span>
+      </div>
+      <h3 id="bundle-modal-title" class="font-display text-xl text-white mb-1">Elige tus Cursos</h3>
+      <p id="bundle-modal-desc" class="text-xs text-gray-400 mb-4">Selecciona los cursos que deseas cursar.</p>
+
+      <div id="bundle-checkboxes-list" class="bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs"></div>
+
+      <div class="flex items-center justify-between mb-4">
+        <span id="bundle-count-indicator" class="text-[11px] font-mono text-gray-400">Seleccionados: 0 / 2</span>
+        <span id="bundle-error-msg" class="hidden text-[10px] text-[--pulse] font-semibold font-mono">⚠ Selecciona la cantidad exacta</span>
+      </div>
+
+      <div class="flex justify-between items-center mb-4 bg-[#111114] p-3 rounded-xl border border-[--line]">
+        <span class="text-xs text-gray-400">Total del combo:</span>
+        <span id="bundle-modal-price" class="font-mono font-bold text-base text-[--volt]">$0.00 MXN</span>
+      </div>
+
+      <button onclick="confirmBundleAddToCart()" class="btn btn-primary w-full py-2.5 text-xs">Confirmar y Agregar al Carrito</button>
+    </div>
+  </div>
+  
   <!-- Modal Checkout con Tarjeta y PayPal -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
@@ -317,11 +343,19 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   <script>
     emailjs.init("jnFg7r-jjzdJHXe6b");
 
-    const FEATURED_PRODUCTS = [
+   const FEATURED_PRODUCTS = [
       { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15.00, description: "Ítem de validación de pasarela oficial ABC Studio." },
-      { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." },
-      { id: 4, name: "Curso Urbanos Avanzados", type: "workshop", price: 300, description: "Curso de 4 clases con 4 diferentes maestros invitados." },
-      { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, description: "Pase individual para 1 sesión de danza contemporánea." }
+      { id: 20, name: "Combo 2 Cursos (Elección Libre)", type: "workshop", price: 500.00, description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN.", isCourseBundle: true, bundleLimit: 2 },
+      { id: 21, name: "Combo 3 Cursos (Elección Libre)", type: "workshop", price: 700.00, description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN.", isCourseBundle: true, bundleLimit: 3 },
+      { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." }
+    ];
+
+    // Lista de cursos disponibles para que el alumno elija al comprar un combo
+    const AVAILABLE_COURSES = [
+      "Curso Contemporáneo Principiantes (Lun 18:30)",
+      "Curso Urbanos Principiantes (Mar 18:30)",
+      "Curso Heels & Sillas (Mié 18:30)",
+      "Curso Urbanos Avanzados (Jue 18:30)"
     ];
 
     const TYPE_META = {
@@ -452,12 +486,111 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           </div>
           <div class="flex items-center justify-between mt-4 pt-3 border-t border-[#1e1e24]">
             <span class="font-mono font-bold text-sm text-white">$${p.price.toFixed(2)}</span>
-            <button class="btn btn-ghost btn-sm text-xs" onclick='Cart.add(${JSON.stringify(p)})'>Agregar</button>
+            <button class="btn btn-primary btn-sm text-xs" onclick="handleFeaturedAddToCart(${p.id})">Agregar</button>
+           
           </div>
         </div>`;
       grid.appendChild(card);
     });
 
+  
+
+    let pendingBundle = null;
+
+    function handleFeaturedAddToCart(productId) {
+      const product = FEATURED_PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      if (product.isCourseBundle) {
+        openBundleModal(product);
+        return;
+      }
+
+      Cart.add(product);
+    }
+
+    function openBundleModal(bundleProduct) {
+      pendingBundle = bundleProduct;
+      
+      document.getElementById("bundle-modal-title").textContent = bundleProduct.name;
+      document.getElementById("bundle-modal-desc").textContent = `Selecciona exactamente ${bundleProduct.bundleLimit} cursos:`;
+      document.getElementById("bundle-modal-price").textContent = `$${bundleProduct.price.toFixed(2)} MXN`;
+      document.getElementById("bundle-error-msg")?.classList.add("hidden");
+      
+      const indicator = document.getElementById("bundle-count-indicator");
+      if (indicator) {
+        indicator.textContent = `Seleccionados: 0 / ${bundleProduct.bundleLimit}`;
+        indicator.classList.remove("text-[--volt]", "font-bold");
+        indicator.classList.add("text-gray-400");
+      }
+
+      const listContainer = document.getElementById("bundle-checkboxes-list");
+      if (listContainer) {
+        listContainer.innerHTML = AVAILABLE_COURSES.map(courseName => `
+          <label class="flex items-center justify-between p-2.5 rounded-lg border border-[#2e2e36] bg-[#18181f] cursor-pointer hover:border-[--volt] transition">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" value="${courseName}" class="bundle-chk accent-[--volt] w-4 h-4 cursor-pointer" onchange="handleBundleCheckChange(this)" />
+              <span class="text-xs text-white font-medium">${courseName}</span>
+            </div>
+            <span class="text-[10px] font-mono text-gray-400">4 clases</span>
+          </label>
+        `).join("");
+      }
+
+      document.getElementById("bundle-modal").classList.add("open");
+    }
+
+    function closeBundleModal() {
+      document.getElementById("bundle-modal").classList.remove("open");
+      pendingBundle = null;
+    }
+
+    function handleBundleCheckChange(inputEl) {
+      if (!pendingBundle) return;
+      const checkedBoxes = document.querySelectorAll(".bundle-chk:checked");
+      const indicator = document.getElementById("bundle-count-indicator");
+      const errorMsg = document.getElementById("bundle-error-msg");
+
+      if (checkedBoxes.length > pendingBundle.bundleLimit) {
+        if (inputEl) inputEl.checked = false;
+        Toast.show(`Solo puedes seleccionar ${pendingBundle.bundleLimit} cursos.`);
+        return;
+      }
+
+      const count = document.querySelectorAll(".bundle-chk:checked").length;
+      if (indicator) {
+        indicator.textContent = `Seleccionados: ${count} / ${pendingBundle.bundleLimit}`;
+        if (count === pendingBundle.bundleLimit) {
+          indicator.classList.remove("text-gray-400");
+          indicator.classList.add("text-[--volt]", "font-bold");
+          errorMsg?.classList.add("hidden");
+        } else {
+          indicator.classList.remove("text-[--volt]", "font-bold");
+          indicator.classList.add("text-gray-400");
+        }
+      }
+    }
+function confirmBundleAddToCart() {
+      if (!pendingBundle) return;
+
+      const checked = Array.from(document.querySelectorAll(".bundle-chk:checked")).map(el => el.value);
+      const errorMsg = document.getElementById("bundle-error-msg");
+
+      if (checked.length !== pendingBundle.bundleLimit) {
+        errorMsg?.classList.remove("hidden");
+        Toast.show(`Debes seleccionar exactamente ${pendingBundle.bundleLimit} cursos.`);
+        return;
+      }
+
+      Cart.add({
+        id: pendingBundle.id,
+        name: `${pendingBundle.name} - [${checked.join(" + ")}]`,
+        price: pendingBundle.price
+      });
+
+      closeBundleModal();
+    }
+    
     // 3. Módulo de Calendario (Lunes a Viernes)
     const SCHEDULED_CLASSES = {
       // Septiembre 2026
