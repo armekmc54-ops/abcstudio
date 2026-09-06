@@ -152,6 +152,33 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       <button onclick="confirmGroupAddToCart()" class="btn btn-primary w-full py-2.5 text-xs">Confirmar y Agregar al Carrito</button>
     </div>
   </div>
+
+<!-- Modal Selector de Cursos para Combos -->
+  <div id="bundle-modal" class="modal-overlay">
+    <div class="modal-box p-6 relative">
+      <button onclick="closeBundleModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="type-badge bg-[--volt] text-[--ink]">Promo Cursos</span>
+      </div>
+      <h3 id="bundle-modal-title" class="font-display text-xl text-white mb-1">Elige tus Cursos</h3>
+      <p id="bundle-modal-desc" class="text-xs text-gray-400 mb-4">Selecciona los cursos que deseas cursar.</p>
+
+      <!-- Contenedor con checkboxes generados dinámicamente -->
+      <div id="bundle-checkboxes-list" class="bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs"></div>
+
+      <div class="flex items-center justify-between mb-4">
+        <span id="bundle-count-indicator" class="text-[11px] font-mono text-gray-400">Seleccionados: 0 / 2</span>
+        <span id="bundle-error-msg" class="hidden text-[10px] text-[--pulse] font-semibold font-mono">⚠ Selecciona la cantidad exacta</span>
+      </div>
+
+      <div class="flex justify-between items-center mb-4 bg-[#111114] p-3 rounded-xl border border-[--line]">
+        <span class="text-xs text-gray-400">Total del combo:</span>
+        <span id="bundle-modal-price" class="font-mono font-bold text-base text-[--volt]">$0.00 MXN</span>
+      </div>
+
+      <button onclick="confirmBundleAddToCart()" class="btn btn-primary w-full py-2.5 text-xs">Confirmar y Agregar al Carrito</button>
+    </div>
+  </div>
   
   <!-- Modal Interactivo de Checkout con Desglose Fiscal -->
   <div id="checkout-modal" class="modal-overlay">
@@ -269,8 +296,32 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       { id: 10, name: "Playera ABC (Negra)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición Black Edition.", variants: ["S", "M", "L", "XL"] },
       { id: 11, name: "Playera ABC (Blanca)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición White Classic.", variants: ["S", "M", "L", "XL"] },
       { id: 12, name: "Paquete 4 Clases Mixtas", type: "pack", price: 360.00, category: "Paquetes", description: "Acceso flexible a 4 clases sueltas de cualquier disciplina.", variants: null },
-      { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, category: "Membresías", description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes.", variants: null }
+      { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, category: "Membresías", description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes.", variants: null },
+      // Combos de Cursos con selección libre
+      { 
+        id: 20, 
+        name: "Combo 2 Cursos (Elección Libre)", 
+        type: "pack", 
+        price: 500.00, 
+        category: "Paquetes", 
+        description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN (Ahorro de $100 MXN).", 
+        isCourseBundle: true, 
+        bundleLimit: 2, 
+        variants: null 
+      },
+      { 
+        id: 21, 
+        name: "Combo 3 Cursos (Elección Libre)", 
+        type: "pack", 
+        price: 700.00, 
+        category: "Paquetes", 
+        description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN (Ahorro de $200 MXN).", 
+        isCourseBundle: true, 
+        bundleLimit: 3, 
+        variants: null 
+      },
     ];
+    
 
     async function loadProductsFromBackend() {
       const skeletonGrid = document.getElementById("skeleton-grid");
@@ -288,6 +339,8 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           price: parseFloat(item.price),
           category: item.category || 'General',
           isGroup: Boolean(item.isGroup),
+          isCourseBundle: Boolean(item.isCourseBundle), // 👈 Agregar
+          bundleLimit: item.bundleLimit || 0,           // 👈 Agregar
           description: item.description || (item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.'),
           variants: item.type === 'merch' ? ["S", "M", "L", "XL"] : null
         }));
@@ -455,10 +508,116 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
     let pendingGroupProduct = null;
 
+    let pendingBundle = null;
+
+    // 1. Abre el modal selector de cursos para los combos
+    function openBundleModal(bundleProduct) {
+      pendingBundle = bundleProduct;
+      
+      document.getElementById("bundle-modal-title").textContent = bundleProduct.name;
+      document.getElementById("bundle-modal-desc").textContent = `Selecciona exactamente ${bundleProduct.bundleLimit} cursos:`;
+      document.getElementById("bundle-modal-price").textContent = `$${bundleProduct.price.toFixed(2)} MXN`;
+      document.getElementById("bundle-error-msg")?.classList.add("hidden");
+      
+      const indicator = document.getElementById("bundle-count-indicator");
+      if (indicator) {
+        indicator.textContent = `Seleccionados: 0 / ${bundleProduct.bundleLimit}`;
+        indicator.classList.remove("text-[--volt]", "font-bold");
+        indicator.classList.add("text-gray-400");
+      }
+
+      // Filtra únicamente los talleres/cursos disponibles
+      const availableCourses = PRODUCTS.filter(p => p.type === "workshop");
+      const listContainer = document.getElementById("bundle-checkboxes-list");
+
+      if (listContainer) {
+        listContainer.innerHTML = availableCourses.map(c => `
+          <label class="flex items-center justify-between p-2.5 rounded-lg border border-[#2e2e36] bg-[#18181f] cursor-pointer hover:border-[--volt] transition">
+            <div class="flex items-center gap-2.5">
+              <input type="checkbox" value="${c.name}" class="bundle-chk accent-[--volt] w-4 h-4 cursor-pointer" onchange="handleBundleCheckChange(event)" />
+              <span class="text-xs text-white font-medium">${c.name}</span>
+            </div>
+            <span class="text-[10px] font-mono text-gray-400">4 clases</span>
+          </label>
+        `).join("");
+      }
+
+      document.getElementById("bundle-modal").classList.add("open");
+    }
+
+    function closeBundleModal() {
+      document.getElementById("bundle-modal").classList.remove("open");
+      pendingBundle = null;
+    }
+
+    // 2. Control de selección y límite estricto de casillas
+    function handleBundleCheckChange(e) {
+      if (!pendingBundle) return;
+      const checkedBoxes = document.querySelectorAll(".bundle-chk:checked");
+      const indicator = document.getElementById("bundle-count-indicator");
+      const errorMsg = document.getElementById("bundle-error-msg");
+
+      if (checkedBoxes.length > pendingBundle.bundleLimit) {
+        if (e && e.target) e.target.checked = false;
+        Toast.show(`Solo puedes seleccionar ${pendingBundle.bundleLimit} cursos.`);
+        return;
+      }
+
+      const count = document.querySelectorAll(".bundle-chk:checked").length;
+      if (indicator) {
+        indicator.textContent = `Seleccionados: ${count} / ${pendingBundle.bundleLimit}`;
+        if (count === pendingBundle.bundleLimit) {
+          indicator.classList.remove("text-gray-400");
+          indicator.classList.add("text-[--volt]", "font-bold");
+          errorMsg?.classList.add("hidden");
+        } else {
+          indicator.classList.remove("text-[--volt]", "font-bold");
+          indicator.classList.add("text-gray-400");
+        }
+      }
+    }
+
+    // 3. Confirmar e ingresar el combo al carrito con los cursos seleccionados
+    function confirmBundleAddToCart() {
+      if (!pendingBundle) return;
+
+      const checked = Array.from(document.querySelectorAll(".bundle-chk:checked")).map(el => el.value);
+      const errorMsg = document.getElementById("bundle-error-msg");
+
+      if (checked.length !== pendingBundle.bundleLimit) {
+        errorMsg?.classList.remove("hidden");
+        Toast.show(`Debes seleccionar exactamente ${pendingBundle.bundleLimit} cursos.`);
+        return;
+      }
+
+      Cart.items().push({
+        key: `${pendingBundle.id}-${Date.now()}`,
+        id: pendingBundle.id,
+        name: `${pendingBundle.name} - [${checked.join(" + ")}]`,
+        price: pendingBundle.price,
+        variant: null,
+        qty: 1
+      });
+
+      localStorage.setItem("abc_cart", JSON.stringify(Cart.items()));
+      Cart.render();
+      Toast.show(`✓ Combo agregado al carrito`);
+      closeBundleModal();
+      Cart.toggleDrawer(true);
+    }
+
+    // 4. Controlador de clics de compra (Combos, Grupos 3p y Productos simples)
     function handleAddToCart(productId) {
       const product = PRODUCTS.find(p => p.id === productId);
       if (!product) return;
 
+      // Opción A: Combo promocional de cursos
+      if (product.isCourseBundle) {
+        openBundleModal(product);
+        return;
+      }
+
+      // Opción B: Promoción de 3 personas
       if (product.isGroup) {
         pendingGroupProduct = product;
         document.getElementById("cat-group-title").textContent = product.name;
@@ -479,6 +638,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         return;
       }
 
+      // Opción C: Producto individual regular / Merch con variante de talla
       const select = document.getElementById(`select-var-${productId}`);
       const variant = select ? select.value : null;
       Cart.add(productId, variant);
