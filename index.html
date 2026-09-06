@@ -101,6 +101,56 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </section>
 
+  <!-- Sección Calendario Interactivo -->
+<section class="max-w-5xl mx-auto px-6 md:px-10 pb-20 fade-in-up">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+    <div>
+      <span class="font-mono text-xs uppercase tracking-widest text-[--volt]">Agenda Mensual</span>
+      <h2 class="font-display text-2xl md:text-3xl text-white mt-1">Horario de Clases & Workshops</h2>
+    </div>
+    
+    <!-- Selector de Mes -->
+    <div class="inline-flex items-center bg-[--panel] border border-[--line] rounded-full p-1 self-start">
+      <button id="btn-month-sep" class="px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]" onclick="switchCalendarMonth('2026-09')">Septiembre 2026</button>
+      <button id="btn-month-oct" class="px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white" onclick="switchCalendarMonth('2026-10')">Octubre 2026</button>
+    </div>
+  </div>
+
+  <!-- Cuadrícula del Calendario -->
+  <div class="bg-[--panel] border border-[--line] rounded-2xl p-5">
+    <div class="grid grid-cols-7 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
+      <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+    </div>
+    <div id="calendar-days-grid" class="grid grid-cols-7 gap-2 pt-3">
+      <!-- Los días se renderizan automáticamente con JS -->
+    </div>
+  </div>
+</section>
+
+<!-- Modal Detalle de Clase desde Calendario -->
+<div id="calendar-class-modal" class="modal-overlay">
+  <div class="modal-box p-6 relative">
+    <button onclick="closeClassModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+    <div class="flex items-center gap-2 mb-2">
+      <span id="cal-modal-badge" class="type-badge bg-[--volt] text-[--ink]">Drop-In</span>
+      <span id="cal-modal-date" class="text-xs font-mono text-gray-400">15 Septiembre</span>
+    </div>
+    <h3 id="cal-modal-title" class="font-display text-xl text-white mb-2">Nombre de la Clase</h3>
+    <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Descripción y horario del profesor invitado.</p>
+    
+    <div class="bg-black/40 rounded-xl p-3 mb-5 border border-[--line] flex justify-between items-center">
+      <span class="text-xs text-gray-400">Precio por sesión:</span>
+      <span id="cal-modal-price" class="font-mono font-bold text-base text-[--volt]">$0.00 MXN</span>
+    </div>
+
+    <div class="flex gap-3">
+      <button id="cal-modal-add-btn" class="btn btn-ghost flex-1 text-xs py-2.5">Agregar al Carrito</button>
+      <button id="cal-modal-pay-btn" class="btn btn-primary flex-1 text-xs py-2.5">Reservar y Pagar</button>
+    </div>
+  </div>
+</div>
+
+  
   <!-- Destacados interactivos -->
   <section class="max-w-5xl mx-auto px-6 md:px-10 pb-24">
     <div class="flex items-end justify-between mb-6">
@@ -211,12 +261,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
   <script>
     emailjs.init("jnFg7r-jjzdJHXe6b");
-   const FEATURED_PRODUCTS = [
+
+    const FEATURED_PRODUCTS = [
       { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15.00, description: "Ítem de validación de pasarela oficial ABC Studio." },
       { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." },
       { id: 4, name: "Curso Urbanos Avanzados", type: "workshop", price: 300, description: "Curso de 4 clases con 4 diferentes maestros invitados." },
       { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, description: "Pase individual para 1 sesión de danza contemporánea." }
     ];
+
     const TYPE_META = {
       drop_in: { label: "Drop-In", color: "var(--volt)" },
       workshop: { label: "Taller", color: "var(--violet)" },
@@ -224,6 +276,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
+    // 1. Manejo del Carrito
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
 
@@ -328,7 +381,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       return { show };
     })();
 
-    // Render Destacados
+    // 2. Render Destacados
     const grid = document.getElementById("featured-grid");
     FEATURED_PRODUCTS.forEach(p => {
       const meta = TYPE_META[p.type] || { label: "General", color: "var(--volt)" };
@@ -350,7 +403,135 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       grid.appendChild(card);
     });
 
-    // Modal Checkout & Pasarela Oficial PayPal
+    // 3. Módulo de Calendario Interactivo
+    const SCHEDULED_CLASSES = {
+      // Septiembre 2026
+      "2026-09-08": { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, time: "6:30 PM - 8:00 PM", instructor: "Mtro. Alaniz", desc: "Técnica contemporánea e improvisación para todos los niveles." },
+      "2026-09-12": { id: 4, name: "Curso Urbanos Avanzados", type: "workshop", price: 300, time: "4:00 PM - 6:00 PM", instructor: "Maestro Invitado", desc: "Módulo intensivo de Street Dance y coreografía comercial." },
+      "2026-09-18": { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300, time: "6:30 PM - 8:00 PM", instructor: "Academia ABC", desc: "Fundamentos de piso, peso y desplazamiento espacial." },
+      "2026-09-22": { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, time: "6:30 PM - 8:00 PM", instructor: "Mtro. Alaniz", desc: "Secuencias coreográficas fluidas y musicalidad." },
+      "2026-09-26": { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15, time: "Todo el día", instructor: "Staff ABC", desc: "Sesión de validación técnica de reserva inmediata." },
+
+      // Octubre 2026
+      "2026-10-06": { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90, time: "6:30 PM - 8:00 PM", instructor: "Mtro. Alaniz", desc: "Trabajo corporal enfocado en transiciones y piso." },
+      "2026-10-10": { id: 4, name: "Workshop: Urban Choreography", type: "workshop", price: 300, time: "5:00 PM - 7:30 PM", instructor: "Masterclass Invitada", desc: "Coreografía intensiva y montaje de video grupal." },
+      "2026-10-17": { id: 1, name: "Taller Intensivo de Giros & Saltos", type: "workshop", price: 300, time: "4:00 PM - 6:30 PM", instructor: "Staff ABC", desc: "Técnica aplicada para intérpretes de danza contemporánea y jazz." },
+      "2026-10-24": { id: 5, name: "Clase Suelta: Urban Fusion", type: "drop_in", price: 90, time: "7:00 PM - 8:30 PM", instructor: "Instructor ABC", desc: "Fusión de ritmos urbanos, control de energía y aislaciones." }
+    };
+
+    let currentMonthView = "2026-09";
+    let selectedClassData = null;
+
+    function renderCalendar(monthKey) {
+      const gridCal = document.getElementById("calendar-days-grid");
+      if (!gridCal) return;
+      gridCal.innerHTML = "";
+
+      const [yearStr, monthStr] = monthKey.split("-");
+      const year = parseInt(yearStr, 10);
+      const month = parseInt(monthStr, 10) - 1;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const startingCol = (firstDayIndex + 6) % 7;
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i = 0; i < startingCol; i++) {
+        const emptyCell = document.createElement("div");
+        emptyCell.className = "h-20 md:h-24 rounded-xl bg-black/20 border border-transparent opacity-30";
+        gridCal.appendChild(emptyCell);
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayFormatted = String(day).padStart(2, "0");
+        const dateKey = `${yearStr}-${monthStr}-${dayFormatted}`;
+        const classInfo = SCHEDULED_CLASSES[dateKey];
+
+        const cell = document.createElement("div");
+        cell.className = `h-20 md:h-24 p-2 rounded-xl border flex flex-col justify-between text-left transition ${
+          classInfo 
+            ? "border-[--line] bg-[#1a1a22] hover:border-[--volt] cursor-pointer" 
+            : "border-[--line]/40 bg-black/10 opacity-60"
+        }`;
+
+        let contentHtml = `<span class="font-mono text-xs font-semibold ${classInfo ? 'text-white' : 'text-gray-500'}">${day}</span>`;
+
+        if (classInfo) {
+          const isWorkshop = classInfo.type === "workshop";
+          const tagColor = isWorkshop ? "var(--violet)" : "var(--volt)";
+          contentHtml += `
+            <div class="mt-1">
+              <p class="text-[10px] font-semibold truncate leading-tight" style="color:${tagColor}">${classInfo.name}</p>
+              <span class="text-[9px] font-mono text-gray-400 block truncate">${classInfo.time}</span>
+            </div>
+            <span class="text-[10px] font-mono font-bold text-right block text-white mt-auto">$${classInfo.price}</span>
+          `;
+          cell.addEventListener("click", () => openClassModal(dateKey, classInfo));
+        }
+
+        cell.innerHTML = contentHtml;
+        gridCal.appendChild(cell);
+      }
+    }
+
+    function switchCalendarMonth(monthKey) {
+      currentMonthView = monthKey;
+      const btnSep = document.getElementById("btn-month-sep");
+      const btnOct = document.getElementById("btn-month-oct");
+
+      if (monthKey === "2026-09") {
+        btnSep.className = "px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]";
+        btnOct.className = "px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white";
+      } else {
+        btnOct.className = "px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]";
+        btnSep.className = "px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white";
+      }
+      renderCalendar(monthKey);
+    }
+
+    function openClassModal(dateStr, classInfo) {
+      selectedClassData = { ...classInfo, date: dateStr };
+      
+      document.getElementById("cal-modal-title").textContent = classInfo.name;
+      document.getElementById("cal-modal-desc").textContent = `${classInfo.desc} · Imparte: ${classInfo.instructor} (${classInfo.time})`;
+      document.getElementById("cal-modal-price").textContent = `$${classInfo.price.toFixed(2)} MXN`;
+      document.getElementById("cal-modal-date").textContent = dateStr;
+      
+      const badge = document.getElementById("cal-modal-badge");
+      badge.textContent = classInfo.type === "workshop" ? "Taller" : "Clase Suelta";
+      badge.style.background = classInfo.type === "workshop" ? "var(--violet)" : "var(--volt)";
+      badge.style.color = classInfo.type === "workshop" ? "#ffffff" : "var(--ink)";
+
+      document.getElementById("calendar-class-modal").classList.add("open");
+    }
+
+    function closeClassModal() {
+      document.getElementById("calendar-class-modal").classList.remove("open");
+    }
+
+    document.getElementById("cal-modal-add-btn")?.addEventListener("click", () => {
+      if (selectedClassData) {
+        Cart.add({
+          id: selectedClassData.id,
+          name: `${selectedClassData.name} (${selectedClassData.date})`,
+          price: selectedClassData.price
+        });
+        closeClassModal();
+      }
+    });
+
+    document.getElementById("cal-modal-pay-btn")?.addEventListener("click", () => {
+      if (selectedClassData) {
+        Cart.add({
+          id: selectedClassData.id,
+          name: `${selectedClassData.name} (${selectedClassData.date})`,
+          price: selectedClassData.price
+        });
+        closeClassModal();
+        document.getElementById("checkout-btn")?.click();
+      }
+    });
+
+    // 4. Modal Checkout & Pasarela Oficial PayPal
     const modal = document.getElementById("checkout-modal");
     const modalTotal = document.getElementById("modal-total");
     const screenPay = document.getElementById("modal-screen-pay");
@@ -451,13 +632,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       Toast.show("✓ Compra finalizada. Recibo generado.");
     }
 
-    // Control de apertura y cierre del Carrito Lateral
+    // 5. Control de apertura y cierre del Carrito Lateral
     document.getElementById("cart-toggle")?.addEventListener("click", () => Cart.toggleDrawer(true));
     document.getElementById("cart-close")?.addEventListener("click", () => Cart.toggleDrawer(false));
     document.getElementById("cart-overlay")?.addEventListener("click", () => Cart.toggleDrawer(false));
 
-    // Render inicial del carrito al cargar la página
+    // Inicializaciones al arrancar
     Cart.render();
+    renderCalendar(currentMonthView);
   </script>
 </body>
 </html>
