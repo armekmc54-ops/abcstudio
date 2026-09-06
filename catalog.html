@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Catálogo — ABC Studio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=BAA0RtrND_LSy6BIpASFUkXKEGSIn4iHfagM_5TH_zLs6U_WKsBDGeF0ADe1tYOiYnR160ptPlf25IMOpQ&currency=MXN&intent=capture&components=buttons"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
@@ -35,7 +35,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 .cart-drawer.open{ transform:translateX(0); }
 .cart-badge{ position:absolute; top:-6px; right:-6px; background:var(--pulse); color:#fff; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; transform:scale(0); transition:transform .2s ease; }
 .cart-badge.show{ transform:scale(1); }
-.toast{ position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); background:var(--volt); color:var(--ink); font-weight:600; font-size:13px; padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease; z-index:60; box-shadow:0 10px 25px rgba(0,0,0,0.5); }
+.toast{ position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); background:var(--volt); color:var(--ink); font-weight:600; font-size:13px; padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease; z-index:999; box-shadow:0 10px 25px rgba(0,0,0,0.5); }
 .toast.show{ opacity:1; transform:translate(-50%,0); }
 .chip{ padding:8px 18px; border-radius:999px; border:1px solid var(--line); background:transparent; color:var(--muted); font-size:13px; font-weight:500; transition:all .15s; cursor:pointer; }
 .chip:hover{ border-color:var(--muted); color:var(--paper); }
@@ -114,42 +114,49 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
-  <!-- Modal Interactivo de Checkout con PayPal y Recibo -->
+  <!-- Modal Interactivo de Checkout con Desglose Fiscal -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
       
       <div class="flex items-center gap-2 mb-3">
         <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
-        <span class="text-xs font-mono tracking-widest text-volt uppercase">PayPal Checkout Gateway</span>
+        <span class="text-xs font-mono tracking-widest text-[--volt] uppercase">PayPal Checkout Gateway</span>
       </div>
 
-      <!-- Pantalla 1: Formulario de Pago con Tarjeta / PayPal -->
+      <!-- Pantalla 1: Formulario de Pago y Resumen Fiscal -->
       <div id="modal-screen-pay">
         <h3 class="font-display text-xl mb-1">Pago Seguro con PayPal</h3>
         <p class="text-xs mb-4" style="color:var(--muted)">Transacción protegida procesada oficialmente por PayPal.</p>
 
-        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
-          <div class="flex justify-between text-xs text-gray-400 mb-1">
-            <span>Receptor oficial:</span>
-            <span class="text-white font-mono">ABC Studio México</span>
+        <!-- Desglose de Pago -->
+        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327] font-mono text-xs space-y-1.5">
+          <div class="flex justify-between text-gray-400">
+            <span>Costo de artículos (Subtotal):</span>
+            <span id="summary-subtotal" class="text-white">$0.00 MXN</span>
           </div>
-          <div class="flex justify-between text-sm font-semibold">
-            <span>Total a transferir:</span>
-            <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
+          <div class="flex justify-between text-gray-400">
+            <span>Comisión pasarela (PayPal):</span>
+            <span id="summary-fee" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between text-gray-400 pb-1.5 border-b border-[#232327]">
+            <span>IVA de procesamiento (16%):</span>
+            <span id="summary-vat" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between font-bold text-sm pt-0.5">
+            <span class="text-white">Total a pagar:</span>
+            <span id="modal-total" class="text-[--volt]">$0.00 MXN</span>
           </div>
         </div>
 
         <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
           <div>
             <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo oficial)</label>
-            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-volt" />
+            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[--volt]" />
           </div>
-
-          <!-- Contenedor Oficial ÚNICO de Botones PayPal -->
           <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
         </form>
-      </div>      
+      </div>     
 
       <!-- Pantalla 2: Recibo Desglosado y Envío de Correo -->
       <div id="modal-screen-success" class="hidden text-left py-2">
@@ -166,7 +173,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           </div>
           <div class="flex justify-between">
             <span class="text-gray-400">Enviado a:</span>
-            <span id="receipt-email" class="text-volt truncate max-w-[200px]">alumno@correo.com</span>
+            <span id="receipt-email" class="text-[--volt] truncate max-w-[200px]">alumno@correo.com</span>
           </div>
           <div class="border-t border-[#232327] pt-2">
             <span class="text-gray-400 block mb-1">Conceptos pagados:</span>
@@ -203,7 +210,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Mercancía", color: "var(--pulse)" }
     };
 
-    // 13 Productos oficiales ABC Studio + Producto de Prueba ($15.00 MXN)
     const FALLBACK_PRODUCTS = [
       { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15.00, category: "Prueba", description: "Ítem de validación de pasarela oficial ABC Studio.", variants: null },
       { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, category: "Cursos", description: "Curso de 4 clases para principiantes en Contemporáneo. Lunes 6:30pm - 8:00pm.", variants: null },
@@ -221,7 +227,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, category: "Membresías", description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes.", variants: null }
     ];
 
-    // 1. Carga dinámica con respaldo automático
     async function loadProductsFromBackend() {
       const skeletonGrid = document.getElementById("skeleton-grid");
       const productGrid = document.getElementById("product-grid");
@@ -241,7 +246,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           variants: item.type === 'merch' ? ["S", "M", "L"] : null
         }));
       } catch (err) {
-        // En GitHub Pages el localhost:4000 no existe, usa de inmediato la lista de respaldo
         PRODUCTS = FALLBACK_PRODUCTS;
       } finally {
         if (skeletonGrid) skeletonGrid.classList.add("hidden");
@@ -318,7 +322,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold truncate text-white">${item.name}</p>
               <p class="text-xs font-mono" style="color:var(--muted)">
-                ${item.variant ? `<span class="text-volt">Talla ${item.variant}</span> · ` : ""}$${item.price.toFixed(2)} MXN
+                ${item.variant ? `<span class="text-[--volt]">Talla ${item.variant}</span> · ` : ""}$${item.price.toFixed(2)} MXN
               </p>
             </div>
             <div class="flex items-center gap-2">
@@ -327,7 +331,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
                 <span class="px-2 text-xs font-mono text-white">${item.qty}</span>
                 <button onclick="Cart.updateQty('${item.key}', 1)" class="px-2 py-1 text-xs text-gray-400 hover:text-white hover:bg-black/30">+</button>
               </div>
-              <button onclick="Cart.remove('${item.key}')" class="p-1 hover:text-pulse text-gray-500 text-xs">✕</button>
+              <button onclick="Cart.remove('${item.key}')" class="p-1 hover:text-[--pulse] text-gray-500 text-xs">✕</button>
             </div>`;
           list.appendChild(row);
         });
@@ -417,14 +421,30 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       renderProducts();
     }
 
-    // Inicializar EmailJS con tu Public Key
     emailjs.init("jnFg7r-jjzdJHXe6b");
 
-    // 4. Modal Checkout & Pasarela Oficial PayPal
+    // 4. Modal Checkout & Pasarela Oficial PayPal con Desglose Fiscal
     const modal = document.getElementById("checkout-modal");
-    const modalTotal = document.getElementById("modal-total");
     const screenPay = document.getElementById("modal-screen-pay");
     const screenSuccess = document.getElementById("modal-screen-success");
+
+    function calculatePaymentBreakdown(netAmount) {
+      if (netAmount <= 0) return { net: 0, fee: 0, vat: 0, gross: 0 };
+      
+      const variableRateWithTax = 0.0395 * 1.16; // 4.582%
+      const fixedFeeWithTax = 4.00 * 1.16;      // $4.64 MXN
+      const gross = (netAmount + fixedFeeWithTax) / (1 - variableRateWithTax);
+      
+      const gatewayFee = (gross * 0.0395) + 4.00;
+      const vat = gatewayFee * 0.16;
+
+      return {
+        net: netAmount,
+        fee: gatewayFee,
+        vat: vat,
+        gross: gross
+      };
+    }
 
     function renderPayPalButtons() {
       const container = document.getElementById("paypal-button-container");
@@ -440,12 +460,13 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             label:  'paypal'
           },
           createOrder: function(data, actions) {
+            const breakdown = calculatePaymentBreakdown(Cart.total());
             return actions.order.create({
               purchase_units: [{
                 description: "Compra oficial en Catálogo ABC Studio",
                 amount: {
                   currency_code: "MXN",
-                  value: Cart.total().toFixed(2)
+                  value: breakdown.gross.toFixed(2)
                 }
               }]
             });
@@ -456,11 +477,15 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             const customerEmail = emailInput || (order.payer && order.payer.email_address) || "cliente@abcstudio.com";
             const payerName = (order.payer && order.payer.name && order.payer.name.given_name) || "Alumno ABC";
             const orderId = order.id || ("ABC-PP-" + Math.floor(100000 + Math.random() * 900000));
-            const totalFormatted = `$${Cart.total().toFixed(2)} MXN`;
+            
+            const breakdown = calculatePaymentBreakdown(Cart.total());
+            const totalFormatted = `$${breakdown.gross.toFixed(2)} MXN`;
 
             const itemsListText = Cart.items()
               .map(i => `• ${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''} - $${(i.price * i.qty).toFixed(2)} MXN`)
               .join("\n");
+
+            const fiscalNotes = `\nSubtotal artículos: $${breakdown.net.toFixed(2)} MXN\nPasarela de pago: $${breakdown.fee.toFixed(2)} MXN\nIVA procesamiento: $${breakdown.vat.toFixed(2)} MXN\nTotal final: ${totalFormatted}`;
 
             try {
               await emailjs.send("service_v4vd0mk", "template_uldofor", {
@@ -468,9 +493,8 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
                 payer_name: payerName,
                 order_id: orderId,
                 total_amount: totalFormatted,
-                items_list: itemsListText
+                items_list: itemsListText + "\n" + fiscalNotes
               });
-              console.log("✓ Comprobante enviado por EmailJS.");
             } catch (err) {
               console.warn("Aviso EmailJS:", err);
             }
@@ -480,12 +504,19 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             document.getElementById("receipt-total").textContent = totalFormatted;
 
             const listContainer = document.getElementById("receipt-items-list");
-            listContainer.innerHTML = Cart.items().map(i => `
-              <div class="flex justify-between">
-                <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
-                <span>$${(i.price * i.qty).toFixed(2)}</span>
+            listContainer.innerHTML = `
+              ${Cart.items().map(i => `
+                <div class="flex justify-between">
+                  <span>${i.qty}x ${i.name} ${i.variant ? `(${i.variant})` : ''}</span>
+                  <span>$${(i.price * i.qty).toFixed(2)}</span>
+                </div>
+              `).join("")}
+              <div class="border-t border-[#232327] mt-2 pt-1 text-[10px] text-gray-400">
+                <div class="flex justify-between"><span>Subtotal:</span><span>$${breakdown.net.toFixed(2)}</span></div>
+                <div class="flex justify-between"><span>Pasarela PayPal:</span><span>$${breakdown.fee.toFixed(2)}</span></div>
+                <div class="flex justify-between"><span>IVA Procesamiento:</span><span>$${breakdown.vat.toFixed(2)}</span></div>
               </div>
-            `).join("");
+            `;
 
             screenPay.classList.add("hidden");
             screenSuccess.classList.remove("hidden");
@@ -502,7 +533,13 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         Toast.show("Tu carrito está vacío.");
         return;
       }
-      modalTotal.textContent = `$${Cart.total().toFixed(2)} MXN`;
+
+      const breakdown = calculatePaymentBreakdown(Cart.total());
+      
+      document.getElementById("summary-subtotal").textContent = `$${breakdown.net.toFixed(2)} MXN`;
+      document.getElementById("summary-fee").textContent = `$${breakdown.fee.toFixed(2)} MXN`;
+      document.getElementById("summary-vat").textContent = `$${breakdown.vat.toFixed(2)} MXN`;
+      document.getElementById("modal-total").textContent = `$${breakdown.gross.toFixed(2)} MXN`;
 
       screenPay.classList.remove("hidden");
       screenSuccess.classList.add("hidden");
@@ -514,6 +551,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     });
 
     document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
+
+    function finishCheckout() {
+      Cart.clear();
+      modal.classList.remove("open");
+      Toast.show("✓ Compra finalizada. Recibo generado.");
+    }
 
     // 5. Event Listeners e Inicialización
     document.getElementById("cart-toggle").addEventListener("click", () => Cart.toggleDrawer(true));
@@ -527,12 +570,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     setFilter(currentFilter);
     loadProductsFromBackend();
     Cart.render();
-
-    function finishCheckout() {
-      Cart.clear();
-      modal.classList.remove("open");
-      Toast.show("✓ Compra finalizada. Recibo generado.");
-    }
   </script>
 </body>
 </html>
