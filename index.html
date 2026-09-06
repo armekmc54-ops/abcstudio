@@ -116,16 +116,15 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </div>
 
-  <!-- Cuadrícula del Calendario -->
+  <!-- Cuadrícula del Calendario (Solo Lunes a Viernes) -->
   <div class="bg-[--panel] border border-[--line] rounded-2xl p-5">
-    <div class="grid grid-cols-7 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
-      <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+    <div class="grid grid-cols-5 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
+      <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
     </div>
-    <div id="calendar-days-grid" class="grid grid-cols-7 gap-2 pt-3">
-      <!-- Los días se renderizan automáticamente con JS -->
+    <div id="calendar-days-grid" class="grid grid-cols-5 gap-2 pt-3">
+      <!-- Los días hábiles se renderizan con JS -->
     </div>
   </div>
-</section>
 
 <!-- Modal Detalle de Clase desde Calendario con Selector de Modalidad -->
 <div id="calendar-class-modal" class="modal-overlay">
@@ -492,17 +491,35 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const year = parseInt(yearStr, 10);
       const month = parseInt(monthStr, 10) - 1;
 
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const startingCol = (firstDayIndex + 6) % 7;
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      // Determinar en qué día de la semana cae el día 1
+      const firstDayDate = new Date(year, month, 1);
+      const firstDayWeekDay = firstDayDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
 
+      // Desplazamiento inicial para Lunes a Viernes (0 = Lun, 1 = Mar, 2 = Mié, 3 = Jue, 4 = Vie)
+      let startingCol = 0;
+      if (firstDayWeekDay >= 1 && firstDayWeekDay <= 5) {
+        startingCol = firstDayWeekDay - 1;
+      }
+
+      // Celdas vacías previas al primer día hábil del mes
       for (let i = 0; i < startingCol; i++) {
         const emptyCell = document.createElement("div");
         emptyCell.className = "h-24 md:h-28 rounded-xl bg-black/20 border border-transparent opacity-30";
         gridCal.appendChild(emptyCell);
       }
 
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      // Recorrer los días del mes y omitir Sábados y Domingos
       for (let day = 1; day <= daysInMonth; day++) {
+        const checkDate = new Date(year, month, day);
+        const dayOfWeek = checkDate.getDay();
+
+        // Omitir Domingo (0) y Sábado (6)
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          continue;
+        }
+
         const dayFormatted = String(day).padStart(2, "0");
         const dateKey = `${yearStr}-${monthStr}-${dayFormatted}`;
         const classInfo = SCHEDULED_CLASSES[dateKey];
