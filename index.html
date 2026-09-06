@@ -127,20 +127,70 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </div>
 </section>
 
-<!-- Modal Detalle de Clase desde Calendario -->
+<!-- Modal Detalle de Clase desde Calendario con Selector de Modalidad -->
 <div id="calendar-class-modal" class="modal-overlay">
   <div class="modal-box p-6 relative">
     <button onclick="closeClassModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
     <div class="flex items-center gap-2 mb-2">
       <span id="cal-modal-badge" class="type-badge bg-[--volt] text-[--ink]">Drop-In</span>
-      <span id="cal-modal-date" class="text-xs font-mono text-gray-400">15 Septiembre</span>
+      <span id="cal-modal-date" class="text-xs font-mono text-gray-400">Fecha</span>
     </div>
-    <h3 id="cal-modal-title" class="font-display text-xl text-white mb-2">Nombre de la Clase</h3>
-    <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Descripción y horario del profesor invitado.</p>
+    <h3 id="cal-modal-title" class="font-display text-xl text-white mb-1">Nombre de la Clase</h3>
+    <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Detalles y profesor.</p>
     
-    <div class="bg-black/40 rounded-xl p-3 mb-5 border border-[--line] flex justify-between items-center">
-      <span class="text-xs text-gray-400">Precio por sesión:</span>
-      <span id="cal-modal-price" class="font-mono font-bold text-base text-[--volt]">$0.00 MXN</span>
+    <!-- Selector de Opción de Pase -->
+    <div class="space-y-2 mb-4">
+      <label class="text-xs text-gray-400 block font-mono">Elige tu modalidad:</label>
+      
+      <!-- Opción 1: Individual -->
+      <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
+        <div class="flex items-center gap-2">
+          <input type="radio" name="class-booking-type" value="single" checked onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
+          <div>
+            <p class="text-xs font-semibold text-white">Pase Individual (1 persona)</p>
+            <p class="text-[10px] text-gray-400">Acceso individual a la sesión</p>
+          </div>
+        </div>
+        <span class="font-mono font-bold text-sm text-[--volt]">$80.00 MXN</span>
+      </label>
+
+      <!-- Opción 2: Promo 3 Personas -->
+      <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
+        <div class="flex items-center gap-2">
+          <input type="radio" name="class-booking-type" value="group3" onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
+          <div>
+            <div class="flex items-center gap-1.5">
+              <p class="text-xs font-semibold text-white">Promo Amigos (3 personas)</p>
+              <span class="text-[9px] bg-[--pulse] text-white px-1.5 py-0.2 rounded font-mono font-bold">Ahorro</span>
+            </div>
+            <p class="text-[10px] text-gray-400">$60 MXN c/u en un solo pago</p>
+          </div>
+        </div>
+        <span class="font-mono font-bold text-sm text-[--volt]">$180.00 MXN</span>
+      </label>
+    </div>
+
+    <!-- Registro de Nombres para el Paquete de 3 personas (Oculto por defecto) -->
+    <div id="group-names-container" class="hidden bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
+      <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
+      <div>
+        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
+        <input type="text" id="student-name-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+      </div>
+      <div>
+        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2 (Nombre y Apellido):</label>
+        <input type="text" id="student-name-2" placeholder="Ej. Mariana López" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+      </div>
+      <div>
+        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3 (Nombre y Apellido):</label>
+        <input type="text" id="student-name-3" placeholder="Ej. Sofía Rivera" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+      </div>
+    </div>
+
+    <!-- Total a confirmar -->
+    <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[--line] flex justify-between items-center">
+      <span class="text-xs text-gray-400">Total a liquidar:</span>
+      <span id="cal-modal-price" class="font-mono font-bold text-base text-[--volt]">$80.00 MXN</span>
     </div>
 
     <div class="flex gap-3">
@@ -403,34 +453,35 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       grid.appendChild(card);
     });
 
-    // 3. Módulo de Calendario Interactivo
+    // 3. Módulo de Calendario Interactivo con Doble Tarifa y Nombres
     const SCHEDULED_CLASSES = {
       // Septiembre 2026
-      "2026-09-07": { id: 5, name: "Conte Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
-      "2026-09-08": { id: 5, name: "Urbanos Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
-      "2026-09-09": { id: 5, name: "Heels Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
-      "2026-09-10": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Antonio O.", desc: "Clase suelta de Técnica Variada nivel abierto." },
+      "2026-09-07": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
+      "2026-09-08": { id: 5, name: "Urbanos Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
+      "2026-09-09": { id: 5, name: "Heels Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
+      "2026-09-10": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Antonio H.", desc: "Clase suelta de Técnica Variada nivel abierto." },
 
-      "2026-09-14": { id: 5, name: "Conte Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
-      "2026-09-15": { id: 5, name: "Urbanos Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
-      "2026-09-16": { id: 5, name: "Heels Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
-      "2026-09-17": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Antonio O. x Gabriel", desc: "Clase suelta de Técnica Variada nivel abierto en colaboración." },
+      "2026-09-14": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
+      "2026-09-15": { id: 5, name: "Urbanos Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
+      "2026-09-16": { id: 5, name: "Heels Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
+      "2026-09-17": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Axel C. x Zitro D.", desc: "Clase suelta de Técnica Variada nivel abierto en colaboración." },
 
-      "2026-09-21": { id: 5, name: "Conte Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
-      "2026-09-22": { id: 5, name: "Urbanos Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
-      "2026-09-23": { id: 5, name: "Heels Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
-      "2026-09-24": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Dany F. x Aley L.", desc: "Clase suelta de Técnica Variada nivel abierto en colaboración." },
+      "2026-09-21": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
+      "2026-09-22": { id: 5, name: "Urbanos Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
+      "2026-09-23": { id: 5, name: "Heels Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
+      "2026-09-24": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Dany F. x Aley L.", desc: "Clase suelta de Técnica Variada nivel abierto en colaboración." },
 
-      "2026-09-28": { id: 5, name: "Conte Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
-      "2026-09-29": { id: 5, name: "Urbanos Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
-      "2026-09-30": { id: 5, name: "Heels Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Aley L.", desc: "Clase suelta de Heels nivel principiantes." },
+      "2026-09-28": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
+      "2026-09-29": { id: 5, name: "Urbanos Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
+      "2026-09-30": { id: 5, name: "Heels Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Aley L.", desc: "Clase suelta de Heels nivel principiantes." },
 
       // Octubre 2026
-      "2026-10-01": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Soto M.", desc: "Clase suelta de Técnica Variada nivel abierto." }
+      "2026-10-01": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Soto M.", desc: "Clase suelta de Técnica Variada nivel abierto." }
     };
 
     let currentMonthView = "2026-09";
     let selectedClassData = null;
+    let selectedBookingType = "single";
 
     function renderCalendar(monthKey) {
       const gridCal = document.getElementById("calendar-days-grid");
@@ -466,14 +517,16 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         let contentHtml = `<span class="font-mono text-xs font-semibold ${classInfo ? 'text-white' : 'text-gray-500'}">${day}</span>`;
 
         if (classInfo) {
-          const tagColor = "var(--volt)";
           contentHtml += `
             <div class="mt-0.5 overflow-hidden">
-              <p class="text-[10px] font-bold truncate leading-tight" style="color:${tagColor}">${classInfo.name}</p>
+              <p class="text-[10px] font-bold truncate leading-tight text-[--volt]">${classInfo.name}</p>
               <p class="text-[9px] font-semibold text-white truncate leading-tight mt-0.5">👤 ${classInfo.instructor}</p>
               <span class="text-[8px] font-mono text-gray-400 block truncate">${classInfo.time}</span>
             </div>
-            <span class="text-[10px] font-mono font-bold text-right block text-[--volt] mt-auto">$${classInfo.price}</span>
+            <div class="flex items-center justify-between text-[9px] font-mono mt-auto pt-1 border-t border-[#232327]">
+              <span class="text-gray-400">1p: <b class="text-white">$80</b></span>
+              <span class="text-[--volt]">3p: <b class="text-white">$180</b></span>
+            </div>
           `;
           cell.addEventListener("click", () => openClassModal(dateKey, classInfo));
         }
@@ -498,16 +551,38 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       renderCalendar(monthKey);
     }
 
+    function handlePricingOptionChange(type) {
+      selectedBookingType = type;
+      const groupContainer = document.getElementById("group-names-container");
+      const modalPrice = document.getElementById("cal-modal-price");
+
+      if (type === "group3") {
+        groupContainer.classList.remove("hidden");
+        modalPrice.textContent = `$${selectedClassData ? selectedClassData.groupPrice.toFixed(2) : '180.00'} MXN`;
+      } else {
+        groupContainer.classList.add("hidden");
+        modalPrice.textContent = `$${selectedClassData ? selectedClassData.singlePrice.toFixed(2) : '80.00'} MXN`;
+      }
+    }
+
     function openClassModal(dateStr, classInfo) {
       selectedClassData = { ...classInfo, date: dateStr };
-      
+      selectedBookingType = "single";
+
+      const radioSingle = document.querySelector('input[name="class-booking-type"][value="single"]');
+      if (radioSingle) radioSingle.checked = true;
+      document.getElementById("group-names-container")?.classList.add("hidden");
+      if (document.getElementById("student-name-1")) document.getElementById("student-name-1").value = "";
+      if (document.getElementById("student-name-2")) document.getElementById("student-name-2").value = "";
+      if (document.getElementById("student-name-3")) document.getElementById("student-name-3").value = "";
+
       document.getElementById("cal-modal-title").textContent = classInfo.name;
       document.getElementById("cal-modal-desc").textContent = `${classInfo.desc} · Imparte: ${classInfo.instructor} (${classInfo.time})`;
-      document.getElementById("cal-modal-price").textContent = `$${classInfo.price.toFixed(2)} MXN`;
+      document.getElementById("cal-modal-price").textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
       document.getElementById("cal-modal-date").textContent = dateStr;
       
       const badge = document.getElementById("cal-modal-badge");
-      badge.textContent = "Clase Suelta";
+      badge.textContent = "Drop-In";
       badge.style.background = "var(--volt)";
       badge.style.color = "var(--ink)";
 
@@ -518,41 +593,50 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       document.getElementById("calendar-class-modal").classList.remove("open");
     }
 
+    function getSelectedClassPayload() {
+      if (!selectedClassData) return null;
+
+      if (selectedBookingType === "group3") {
+        const s1 = document.getElementById("student-name-1")?.value.trim();
+        const s2 = document.getElementById("student-name-2")?.value.trim();
+        const s3 = document.getElementById("student-name-3")?.value.trim();
+
+        if (!s1 || !s2 || !s3) {
+          Toast.show("Por favor llena los nombres de los 3 alumnos.");
+          return null;
+        }
+
+        return {
+          id: `${selectedClassData.id}-g3`,
+          name: `${selectedClassData.name} (Promo 3 Personas) - [${s1}, ${s2}, ${s3}] (${selectedClassData.date})`,
+          price: selectedClassData.groupPrice
+        };
+      }
+
+      return {
+        id: selectedClassData.id,
+        name: `${selectedClassData.name} - ${selectedClassData.instructor} (${selectedClassData.date})`,
+        price: selectedClassData.singlePrice
+      };
+    }
+
     document.getElementById("cal-modal-add-btn")?.addEventListener("click", () => {
-      if (selectedClassData) {
-        Cart.add({
-          id: selectedClassData.id,
-          name: `${selectedClassData.name} - ${selectedClassData.instructor} (${selectedClassData.date})`,
-          price: selectedClassData.price
-        });
+      const payload = getSelectedClassPayload();
+      if (payload) {
+        Cart.add(payload);
         closeClassModal();
       }
     });
 
     document.getElementById("cal-modal-pay-btn")?.addEventListener("click", () => {
-      if (selectedClassData) {
-        Cart.add({
-          id: selectedClassData.id,
-          name: `${selectedClassData.name} - ${selectedClassData.instructor} (${selectedClassData.date})`,
-          price: selectedClassData.price
-        });
+      const payload = getSelectedClassPayload();
+      if (payload) {
+        Cart.add(payload);
         closeClassModal();
         document.getElementById("checkout-btn")?.click();
       }
     });
     
-
-    document.getElementById("cal-modal-pay-btn")?.addEventListener("click", () => {
-      if (selectedClassData) {
-        Cart.add({
-          id: selectedClassData.id,
-          name: `${selectedClassData.name} (${selectedClassData.date})`,
-          price: selectedClassData.price
-        });
-        closeClassModal();
-        document.getElementById("checkout-btn")?.click();
-      }
-    });
 
     // 4. Modal Checkout & Pasarela Oficial PayPal
     const modal = document.getElementById("checkout-modal");
