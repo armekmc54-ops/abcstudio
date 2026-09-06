@@ -152,7 +152,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
               <p class="text-[10px] text-gray-400">Acceso individual a la sesión</p>
             </div>
           </div>
-          <span class="font-mono font-bold text-sm text-[--volt]">$80.00 MXN</span>
+          <span id="cal-modal-option-single-price" class="font-mono font-bold text-sm text-[--volt]">$80.00 MXN</span>
         </label>
 
         <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
@@ -163,10 +163,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
                 <p class="text-xs font-semibold text-white">Promo Amigos (3 personas)</p>
                 <span class="text-[9px] bg-[--pulse] text-white px-1.5 py-0.2 rounded font-mono font-bold">Ahorro</span>
               </div>
-              <p class="text-[10px] text-gray-400">$60 MXN c/u en un solo pago</p>
+              <p id="cal-modal-group-subtext" class="text-[10px] text-gray-400">$60 MXN c/u en un solo pago</p>
             </div>
           </div>
-          <span class="font-mono font-bold text-sm text-[--volt]">$180.00 MXN</span>
+          <span id="cal-modal-option-group-price" class="font-mono font-bold text-sm text-[--volt]">$180.00 MXN</span>
         </label>
       </div>
 
@@ -484,46 +484,46 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const gridCal = document.getElementById("calendar-days-grid");
       if (!gridCal) return;
       gridCal.innerHTML = "";
-
+    
       const [yearStr, monthStr] = monthKey.split("-");
       const year = parseInt(yearStr, 10);
       const month = parseInt(monthStr, 10) - 1;
-
+    
       const firstDayDate = new Date(year, month, 1);
-      const firstDayWeekDay = firstDayDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-
+      const firstDayWeekDay = firstDayDate.getDay();
+    
       let startingCol = 0;
       if (firstDayWeekDay >= 1 && firstDayWeekDay <= 5) {
         startingCol = firstDayWeekDay - 1;
       }
-
+    
       for (let i = 0; i < startingCol; i++) {
         const emptyCell = document.createElement("div");
         emptyCell.className = "h-24 md:h-28 rounded-xl bg-black/20 border border-transparent opacity-30";
         gridCal.appendChild(emptyCell);
       }
-
+    
       const daysInMonth = new Date(year, month + 1, 0).getDate();
-
+    
       for (let day = 1; day <= daysInMonth; day++) {
         const checkDate = new Date(year, month, day);
         const dayOfWeek = checkDate.getDay();
-
+    
         if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-
+    
         const dayFormatted = String(day).padStart(2, "0");
         const dateKey = `${yearStr}-${monthStr}-${dayFormatted}`;
         const classInfo = SCHEDULED_CLASSES[dateKey];
-
+    
         const cell = document.createElement("div");
         cell.className = `h-24 md:h-28 p-2 rounded-xl border flex flex-col justify-between text-left transition ${
           classInfo 
             ? "border-[--line] bg-[#1a1a22] hover:border-[--volt] cursor-pointer" 
             : "border-[--line]/40 bg-black/10 opacity-60"
         }`;
-
+    
         let contentHtml = `<span class="font-mono text-xs font-semibold ${classInfo ? 'text-white' : 'text-gray-500'}">${day}</span>`;
-
+    
         if (classInfo) {
           contentHtml += `
             <div class="mt-0.5 overflow-hidden">
@@ -532,18 +532,18 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
               <span class="text-[8px] font-mono text-gray-400 block truncate">${classInfo.time}</span>
             </div>
             <div class="flex items-center justify-between text-[9px] font-mono mt-auto pt-1 border-t border-[#232327]">
-              <span class="text-gray-400">1p: <b class="text-white">$80</b></span>
-              <span class="text-[--volt]">3p: <b class="text-white">$180</b></span>
+              <span class="text-gray-400">1p: <b class="text-white">$${classInfo.singlePrice}</b></span>
+              <span class="text-[--volt]">3p: <b class="text-white">$${classInfo.groupPrice}</b></span>
             </div>
           `;
           cell.addEventListener("click", () => openClassModal(dateKey, classInfo));
         }
-
+    
         cell.innerHTML = contentHtml;
         gridCal.appendChild(cell);
       }
     }
-
+    
     function switchCalendarMonth(monthKey) {
       currentMonthView = monthKey;
       const btnSep = document.getElementById("btn-month-sep");
@@ -576,24 +576,46 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     function openClassModal(dateStr, classInfo) {
       selectedClassData = { ...classInfo, date: dateStr };
       selectedBookingType = "single";
-
+    
       const radioSingle = document.querySelector('input[name="class-booking-type"][value="single"]');
       if (radioSingle) radioSingle.checked = true;
       document.getElementById("group-names-container")?.classList.add("hidden");
-      if (document.getElementById("student-name-1")) document.getElementById("student-name-1").value = "";
-      if (document.getElementById("student-name-2")) document.getElementById("student-name-2").value = "";
-      if (document.getElementById("student-name-3")) document.getElementById("student-name-3").value = "";
-
+    
+      const errorMsg = document.getElementById("group-error-msg");
+      if (errorMsg) errorMsg.classList.add("hidden");
+    
+      [1, 2, 3].forEach(num => {
+        const input = document.getElementById(`student-name-${num}`);
+        if (input) {
+          input.value = "";
+          input.classList.remove("border-[--pulse]");
+          input.classList.add("border-[#2e2e36]");
+        }
+      });
+    
       document.getElementById("cal-modal-title").textContent = classInfo.name;
       document.getElementById("cal-modal-desc").textContent = `${classInfo.desc} · Imparte: ${classInfo.instructor} (${classInfo.time})`;
-      document.getElementById("cal-modal-price").textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
       document.getElementById("cal-modal-date").textContent = dateStr;
+    
+      // Actualiza los textos de las dos opciones del modal con el precio de esa clase
+      const optSingle = document.getElementById("cal-modal-option-single-price");
+      const optGroup = document.getElementById("cal-modal-option-group-price");
+      if (optSingle) optSingle.textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
+      if (optGroup) optGroup.textContent = `$${classInfo.groupPrice.toFixed(2)} MXN`;
+
+// 👉 AQUÍ SE PONE: Calcula y muestra el precio por persona de forma dinámica
+      const perPerson = Math.round(classInfo.groupPrice / 3);
+      const subText = document.getElementById("cal-modal-group-subtext");
+      if (subText) subText.textContent = `$${perPerson} MXN c/u en un solo pago`;
       
+      // Precio inicial seleccionado (individual)
+      document.getElementById("cal-modal-price").textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
+    
       const badge = document.getElementById("cal-modal-badge");
       badge.textContent = "Drop-In";
       badge.style.background = "var(--volt)";
       badge.style.color = "var(--ink)";
-
+    
       document.getElementById("calendar-class-modal").classList.add("open");
     }
 
