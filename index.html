@@ -172,7 +172,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
       <!-- Registro de Nombres para 3 personas -->
       <div id="group-names-container" class="hidden bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
-        <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
+        <div class="flex items-center justify-between">
+          <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
+          <span id="group-error-msg" class="hidden text-[10px] text-[--pulse] font-semibold">⚠ Llena todos los nombres</span>
+        </div>
         <div>
           <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
           <input type="text" id="student-name-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
