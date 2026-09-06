@@ -114,6 +114,45 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
+
+  <!-- Modal para capturar nombres en paquetes grupales del catálogo -->
+  <div id="catalog-group-modal" class="modal-overlay">
+    <div class="modal-box p-6 relative">
+      <button onclick="closeCatalogGroupModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="type-badge bg-[--pulse] text-white">Promo 3 Personas</span>
+      </div>
+      <h3 id="cat-group-title" class="font-display text-xl text-white mb-1">Nombre de la Promo</h3>
+      <p id="cat-group-desc" class="text-xs text-gray-400 mb-4">Ingresa el nombre de las 3 personas que asistirán.</p>
+
+      <div class="bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
+        <div class="flex items-center justify-between">
+          <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
+          <span id="cat-group-error" class="hidden text-[10px] text-[--pulse] font-semibold">⚠ Llena todos los nombres</span>
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
+          <input type="text" id="cat-student-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2 (Nombre y Apellido):</label>
+          <input type="text" id="cat-student-2" placeholder="Ej. Mariana López" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3 (Nombre y Apellido):</label>
+          <input type="text" id="cat-student-3" placeholder="Ej. Sofía Rivera" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        </div>
+      </div>
+
+      <div class="flex justify-between items-center mb-4 bg-[#111114] p-3 rounded-xl border border-[--line]">
+        <span class="text-xs text-gray-400">Total:</span>
+        <span id="cat-group-price" class="font-mono font-bold text-base text-[--volt]">$0.00 MXN</span>
+      </div>
+
+      <button onclick="confirmGroupAddToCart()" class="btn btn-primary w-full py-2.5 text-xs">Confirmar y Agregar al Carrito</button>
+    </div>
+  </div>
+  
   <!-- Modal Interactivo de Checkout con Desglose Fiscal -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
@@ -210,19 +249,25 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Mercancía", color: "var(--pulse)" }
     };
 
+    // Productos oficiales ABC Studio
     const FALLBACK_PRODUCTS = [
-      { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15.00, category: "Prueba", description: "Ítem de validación de pasarela oficial ABC Studio.", variants: null },
       { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, category: "Cursos", description: "Curso de 4 clases para principiantes en Contemporáneo. Lunes 6:30pm - 8:00pm.", variants: null },
       { id: 2, name: "Curso Urbanos Principiantes", type: "workshop", price: 300.00, category: "Cursos", description: "Curso de 4 clases para principiantes. Martes 6:30pm - 8:00pm.", variants: null },
       { id: 3, name: "Curso Heels & Sillas", type: "workshop", price: 300.00, category: "Cursos", description: "Curso de 4 clases en técnica de heels y trabajo en silla. Miércoles 6:30pm - 8:00pm.", variants: null },
       { id: 4, name: "Curso Urbanos Avanzados", type: "workshop", price: 300.00, category: "Cursos", description: "Curso de 4 clases intensivas con 4 maestros invitados. Jueves 6:30pm - 8:00pm.", variants: null },
-      { id: 5, name: "Clase Suelta: Contemporáneo", type: "drop_in", price: 90.00, category: "Clases Sueltas", description: "Pase individual para 1 sesión de danza contemporánea.", variants: null },
-      { id: 6, name: "Clase Suelta: Urbanos Principiantes", type: "drop_in", price: 90.00, category: "Clases Sueltas", description: "Pase individual para 1 sesión de fundamentos urbanos.", variants: null },
-      { id: 7, name: "Clase Suelta: Heels", type: "drop_in", price: 90.00, category: "Clases Sueltas", description: "Pase individual para 1 sesión de técnica heels.", variants: null },
-      { id: 8, name: "Clase Suelta: Urbanos Avanzados", type: "drop_in", price: 90.00, category: "Clases Sueltas", description: "Pase individual para 1 sesión de nivel intermedio/avanzado.", variants: null },
-      { id: 9, name: "Sudadera Hoodie ABC", type: "merch", price: 300.00, category: "Mercancía", description: "Sudadera oficial ABC Studio con serigrafía de alta calidad.", variants: ["S", "M", "L"] },
-      { id: 10, name: "Playera ABC (Negra)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición Black Edition.", variants: ["S", "M", "L"] },
-      { id: 11, name: "Playera ABC (Blanca)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición White Classic.", variants: ["S", "M", "L"] },
+      
+      // Clases Sueltas
+      { id: 5, name: "Clase Suelta Regular", type: "drop_in", price: 80.00, category: "Clases Sueltas", description: "Pase individual regular para 1 sesión de clase presencial.", variants: null },
+      { id: 14, name: "Clase Especial (Colaboración)", type: "drop_in", price: 120.00, category: "Clases Sueltas", description: "Pase individual para sesión impartida en colaboración por 2 maestros.", variants: null },
+
+      // Promociones Grupales
+      { id: 15, name: "Promo Amigos Regular (3 Personas)", type: "pack", price: 180.00, category: "Paquetes", description: "Acceso para 3 personas en clase regular ($60 MXN c/u en una sola exhibición).", isGroup: true, variants: null },
+      { id: 16, name: "Promo Colaboración (3 Personas)", type: "pack", price: 200.00, category: "Paquetes", description: "Acceso para 3 personas en clase de colaboración ($66.60 MXN c/u).", isGroup: true, variants: null },
+
+      // Ropa y Membresías
+      { id: 9, name: "Sudadera Hoodie ABC", type: "merch", price: 300.00, category: "Mercancía", description: "Sudadera oficial ABC Studio con serigrafía de alta calidad.", variants: ["S", "M", "L", "XL"] },
+      { id: 10, name: "Playera ABC (Negra)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición Black Edition.", variants: ["S", "M", "L", "XL"] },
+      { id: 11, name: "Playera ABC (Blanca)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición White Classic.", variants: ["S", "M", "L", "XL"] },
       { id: 12, name: "Paquete 4 Clases Mixtas", type: "pack", price: 360.00, category: "Paquetes", description: "Acceso flexible a 4 clases sueltas de cualquier disciplina.", variants: null },
       { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, category: "Membresías", description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes.", variants: null }
     ];
@@ -242,8 +287,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           type: item.type,
           price: parseFloat(item.price),
           category: item.category || 'General',
+          isGroup: Boolean(item.isGroup),
           description: item.description || (item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.'),
-          variants: item.type === 'merch' ? ["S", "M", "L"] : null
+          variants: item.type === 'merch' ? ["S", "M", "L", "XL"] : null
         }));
       } catch (err) {
         PRODUCTS = FALLBACK_PRODUCTS;
@@ -407,10 +453,84 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       }).join("");
     }
 
+    let pendingGroupProduct = null;
+
     function handleAddToCart(productId) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+
+      if (product.isGroup) {
+        pendingGroupProduct = product;
+        document.getElementById("cat-group-title").textContent = product.name;
+        document.getElementById("cat-group-desc").textContent = product.description;
+        document.getElementById("cat-group-price").textContent = `$${product.price.toFixed(2)} MXN`;
+        
+        document.getElementById("cat-group-error")?.classList.add("hidden");
+        [1, 2, 3].forEach(n => {
+          const input = document.getElementById(`cat-student-${n}`);
+          if (input) {
+            input.value = "";
+            input.classList.remove("border-[--pulse]");
+            input.classList.add("border-[#2e2e36]");
+          }
+        });
+
+        document.getElementById("catalog-group-modal").classList.add("open");
+        return;
+      }
+
       const select = document.getElementById(`select-var-${productId}`);
       const variant = select ? select.value : null;
       Cart.add(productId, variant);
+    }
+
+    function closeCatalogGroupModal() {
+      document.getElementById("catalog-group-modal").classList.remove("open");
+      pendingGroupProduct = null;
+    }
+
+    function confirmGroupAddToCart() {
+      if (!pendingGroupProduct) return;
+
+      const in1 = document.getElementById("cat-student-1");
+      const in2 = document.getElementById("cat-student-2");
+      const in3 = document.getElementById("cat-student-3");
+      const err = document.getElementById("cat-group-error");
+
+      const s1 = in1?.value.trim();
+      const s2 = in2?.value.trim();
+      const s3 = in3?.value.trim();
+
+      [in1, in2, in3].forEach(el => {
+        el?.classList.remove("border-[--pulse]");
+        el?.classList.add("border-[#2e2e36]");
+      });
+
+      let hasError = false;
+      if (!s1) { in1?.classList.add("border-[--pulse]"); in1?.classList.remove("border-[#2e2e36]"); hasError = true; }
+      if (!s2) { in2?.classList.add("border-[--pulse]"); in2?.classList.remove("border-[#2e2e36]"); hasError = true; }
+      if (!s3) { in3?.classList.add("border-[--pulse]"); in3?.classList.remove("border-[#2e2e36]"); hasError = true; }
+
+      if (hasError) {
+        if (err) err.classList.remove("hidden");
+        Toast.show("Por favor llena los nombres de los 3 alumnos.");
+        return;
+      }
+
+      Cart.items().push({
+        key: `${pendingGroupProduct.id}-${Date.now()}`,
+        id: pendingGroupProduct.id,
+        name: `${pendingGroupProduct.name} - [${s1}, ${s2}, ${s3}]`,
+        price: pendingGroupProduct.price,
+        variant: null,
+        qty: 1
+      });
+
+      localStorage.setItem("abc_cart", JSON.stringify(Cart.items()));
+      Cart.render();
+      Toast.show(`✓ ${pendingGroupProduct.name} agregado`);
+      closeCatalogGroupModal();
+      Cart.toggleDrawer(true);
     }
 
     function setFilter(type) {
