@@ -49,6 +49,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 </head>
 <body>
 
+  <!-- Navbar -->
   <header class="navbar flex items-center justify-between px-6 md:px-10 py-4">
     <a href="index.html" class="font-display text-xl tracking-wider">ABC<span class="brand-dot"> STUDIO</span></a>
     <nav class="hidden md:flex gap-8 text-sm" style="color:var(--muted)">
@@ -63,6 +64,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </button>
   </header>
 
+  <!-- Hero Section -->
   <section class="max-w-5xl mx-auto px-6 md:px-10 pt-16 pb-14 fade-in-up">
     <p class="font-mono text-xs uppercase tracking-widest mb-4" style="color:var(--pulse)">
       Clases · Talleres · Cursos digitales · Mercancía
@@ -101,105 +103,102 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </section>
 
-  <!-- Sección Calendario Interactivo -->
-<section class="max-w-5xl mx-auto px-6 md:px-10 pb-20 fade-in-up">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-    <div>
-      <span class="font-mono text-xs uppercase tracking-widest text-[--volt]">Agenda Mensual</span>
-      <h2 class="font-display text-2xl md:text-3xl text-white mt-1">Calendario de Clases Sueltas (Drop-In)</h2>
-    </div>
-    
-    <!-- Selector de Mes -->
-    <div class="inline-flex items-center bg-[--panel] border border-[--line] rounded-full p-1 self-start">
-      <button id="btn-month-sep" class="px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]" onclick="switchCalendarMonth('2026-09')">Septiembre 2026</button>
-      <button id="btn-month-oct" class="px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white" onclick="switchCalendarMonth('2026-10')">Octubre 2026</button>
-    </div>
-  </div>
-
-  <!-- Cuadrícula del Calendario (Solo Lunes a Viernes) -->
-  <div class="bg-[--panel] border border-[--line] rounded-2xl p-5">
-    <div class="grid grid-cols-5 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
-      <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
-    </div>
-    <div id="calendar-days-grid" class="grid grid-cols-5 gap-2 pt-3">
-      <!-- Los días hábiles se renderizan con JS -->
-    </div>
-  </div>
-
-<!-- Modal Detalle de Clase desde Calendario con Selector de Modalidad -->
-<div id="calendar-class-modal" class="modal-overlay">
-  <div class="modal-box p-6 relative">
-    <button onclick="closeClassModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
-    <div class="flex items-center gap-2 mb-2">
-      <span id="cal-modal-badge" class="type-badge bg-[--volt] text-[--ink]">Drop-In</span>
-      <span id="cal-modal-date" class="text-xs font-mono text-gray-400">Fecha</span>
-    </div>
-    <h3 id="cal-modal-title" class="font-display text-xl text-white mb-1">Nombre de la Clase</h3>
-    <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Detalles y profesor.</p>
-    
-    <!-- Selector de Opción de Pase -->
-    <div class="space-y-2 mb-4">
-      <label class="text-xs text-gray-400 block font-mono">Elige tu modalidad:</label>
+  <!-- Sección Calendario Interactivo (Lunes a Viernes) -->
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pb-20 fade-in-up">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div>
+        <span class="font-mono text-xs uppercase tracking-widest text-[--volt]">Agenda Mensual</span>
+        <h2 class="font-display text-2xl md:text-3xl text-white mt-1">Calendario de Clases Sueltas (Drop-In)</h2>
+      </div>
       
-      <!-- Opción 1: Individual -->
-      <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
-        <div class="flex items-center gap-2">
-          <input type="radio" name="class-booking-type" value="single" checked onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
-          <div>
-            <p class="text-xs font-semibold text-white">Pase Individual (1 persona)</p>
-            <p class="text-[10px] text-gray-400">Acceso individual a la sesión</p>
-          </div>
-        </div>
-        <span class="font-mono font-bold text-sm text-[--volt]">$80.00 MXN</span>
-      </label>
+      <!-- Selector de Mes -->
+      <div class="inline-flex items-center bg-[--panel] border border-[--line] rounded-full p-1 self-start">
+        <button id="btn-month-sep" class="px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]" onclick="switchCalendarMonth('2026-09')">Septiembre 2026</button>
+        <button id="btn-month-oct" class="px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white" onclick="switchCalendarMonth('2026-10')">Octubre 2026</button>
+      </div>
+    </div>
 
-      <!-- Opción 2: Promo 3 Personas -->
-      <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
-        <div class="flex items-center gap-2">
-          <input type="radio" name="class-booking-type" value="group3" onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
-          <div>
-            <div class="flex items-center gap-1.5">
-              <p class="text-xs font-semibold text-white">Promo Amigos (3 personas)</p>
-              <span class="text-[9px] bg-[--pulse] text-white px-1.5 py-0.2 rounded font-mono font-bold">Ahorro</span>
+    <!-- Cuadrícula del Calendario (5 columnas) -->
+    <div class="bg-[--panel] border border-[--line] rounded-2xl p-5">
+      <div class="grid grid-cols-5 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
+        <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
+      </div>
+      <div id="calendar-days-grid" class="grid grid-cols-5 gap-2 pt-3">
+        <!-- Días generados por JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal Detalle de Clase desde Calendario -->
+  <div id="calendar-class-modal" class="modal-overlay">
+    <div class="modal-box p-6 relative">
+      <button onclick="closeClassModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+      <div class="flex items-center gap-2 mb-2">
+        <span id="cal-modal-badge" class="type-badge bg-[--volt] text-[--ink]">Drop-In</span>
+        <span id="cal-modal-date" class="text-xs font-mono text-gray-400">Fecha</span>
+      </div>
+      <h3 id="cal-modal-title" class="font-display text-xl text-white mb-1">Nombre de la Clase</h3>
+      <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Detalles y profesor.</p>
+      
+      <!-- Opciones de Tarifa -->
+      <div class="space-y-2 mb-4">
+        <label class="text-xs text-gray-400 block font-mono">Elige tu modalidad:</label>
+        
+        <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="class-booking-type" value="single" checked onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
+            <div>
+              <p class="text-xs font-semibold text-white">Pase Individual (1 persona)</p>
+              <p class="text-[10px] text-gray-400">Acceso individual a la sesión</p>
             </div>
-            <p class="text-[10px] text-gray-400">$60 MXN c/u en un solo pago</p>
           </div>
+          <span class="font-mono font-bold text-sm text-[--volt]">$80.00 MXN</span>
+        </label>
+
+        <label class="flex items-center justify-between p-3 rounded-xl border border-[--line] bg-[#1a1a20] cursor-pointer hover:border-[--volt] transition">
+          <div class="flex items-center gap-2">
+            <input type="radio" name="class-booking-type" value="group3" onchange="handlePricingOptionChange(this.value)" class="accent-[--volt]" />
+            <div>
+              <div class="flex items-center gap-1.5">
+                <p class="text-xs font-semibold text-white">Promo Amigos (3 personas)</p>
+                <span class="text-[9px] bg-[--pulse] text-white px-1.5 py-0.2 rounded font-mono font-bold">Ahorro</span>
+              </div>
+              <p class="text-[10px] text-gray-400">$60 MXN c/u en un solo pago</p>
+            </div>
+          </div>
+          <span class="font-mono font-bold text-sm text-[--volt]">$180.00 MXN</span>
+        </label>
+      </div>
+
+      <!-- Registro de Nombres para 3 personas -->
+      <div id="group-names-container" class="hidden bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
+        <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
+          <input type="text" id="student-name-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
         </div>
-        <span class="font-mono font-bold text-sm text-[--volt]">$180.00 MXN</span>
-      </label>
-    </div>
-
-    <!-- Registro de Nombres para el Paquete de 3 personas (Oculto por defecto) -->
-    <div id="group-names-container" class="hidden bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
-      <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
-      <div>
-        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
-        <input type="text" id="student-name-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2 (Nombre y Apellido):</label>
+          <input type="text" id="student-name-2" placeholder="Ej. Mariana López" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3 (Nombre y Apellido):</label>
+          <input type="text" id="student-name-3" placeholder="Ej. Sofía Rivera" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
+        </div>
       </div>
-      <div>
-        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2 (Nombre y Apellido):</label>
-        <input type="text" id="student-name-2" placeholder="Ej. Mariana López" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
-      </div>
-      <div>
-        <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3 (Nombre y Apellido):</label>
-        <input type="text" id="student-name-3" placeholder="Ej. Sofía Rivera" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
-      </div>
-    </div>
 
-    <!-- Total a confirmar -->
-    <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[--line] flex justify-between items-center">
-      <span class="text-xs text-gray-400">Total a liquidar:</span>
-      <span id="cal-modal-price" class="font-mono font-bold text-base text-[--volt]">$80.00 MXN</span>
-    </div>
+      <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[--line] flex justify-between items-center">
+        <span class="text-xs text-gray-400">Total a liquidar:</span>
+        <span id="cal-modal-price" class="font-mono font-bold text-base text-[--volt]">$80.00 MXN</span>
+      </div>
 
-    <div class="flex gap-3">
-      <button id="cal-modal-add-btn" class="btn btn-ghost flex-1 text-xs py-2.5">Agregar al Carrito</button>
-      <button id="cal-modal-pay-btn" class="btn btn-primary flex-1 text-xs py-2.5">Reservar y Pagar</button>
+      <div class="flex gap-3">
+        <button id="cal-modal-add-btn" class="btn btn-ghost flex-1 text-xs py-2.5">Agregar al Carrito</button>
+        <button id="cal-modal-pay-btn" class="btn btn-primary flex-1 text-xs py-2.5">Reservar y Pagar</button>
+      </div>
     </div>
   </div>
-</div>
 
-  
   <!-- Destacados interactivos -->
   <section class="max-w-5xl mx-auto px-6 md:px-10 pb-24">
     <div class="flex items-end justify-between mb-6">
@@ -229,46 +228,42 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
-  <!-- Modal Interactivo de Checkout con Tarjeta y Recibo -->
+  <!-- Modal Checkout con Tarjeta y PayPal -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
       
       <div class="flex items-center gap-2 mb-3">
         <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
-        <span class="text-xs font-mono tracking-widest text-volt uppercase">PayPal Checkout Gateway</span>
+        <span class="text-xs font-mono tracking-widest text-[--volt] uppercase">PayPal Checkout Gateway</span>
       </div>
 
-<!-- Pantalla 1: Formulario de Pago con Tarjeta / PayPal -->
-  <div id="modal-screen-pay">
+      <!-- Pantalla 1: Formulario de Pago -->
+      <div id="modal-screen-pay">
+        <h3 class="font-display text-xl mb-1">Pago Seguro con PayPal</h3>
+        <p class="text-xs mb-4" style="color:var(--muted)">Transacción protegida procesada oficialmente por PayPal.</p>
 
-    <h3 class="font-display text-xl mb-1">Pago Seguro con PayPal</h3>
-    <p class="text-xs mb-4" style="color:var(--muted)">Transacción protegida procesada oficialmente por PayPal.</p>
+        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
+          <div class="flex justify-between text-xs text-gray-400 mb-1">
+            <span>Receptor oficial:</span>
+            <span class="text-white font-mono">ABC Studio México</span>
+          </div>
+          <div class="flex justify-between text-sm font-semibold">
+            <span>Total a transferir:</span>
+            <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
+          </div>
+        </div>
 
-    <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327]">
-      <div class="flex justify-between text-xs text-gray-400 mb-1">
-        <span>Receptor oficial:</span>
-        <span class="text-white font-mono">ABC Studio México</span>
-      </div>
-      <div class="flex justify-between text-sm font-semibold">
-        <span>Total a transferir:</span>
-        <span id="modal-total" style="color:var(--volt)">$0.00 MXN</span>
-      </div>
-    </div>
+        <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
+          <div>
+            <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo oficial)</label>
+            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[--volt]" />
+          </div>
+          <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
+        </form>
+      </div>     
 
-    <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
-      <div>
-        <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo oficial)</label>
-        <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-volt" />
-      </div>
-
-      <!-- Contenedor Oficial ÚNICO de Botones PayPal -->
-      <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
-    </form>
-
-  </div>     
-
-      <!-- Pantalla 2: Recibo Desglosado y Envío de Correo -->
+      <!-- Pantalla 2: Éxito y Recibo -->
       <div id="modal-screen-success" class="hidden text-left py-2">
         <div class="text-center mb-4">
           <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-2 text-xl font-bold">✓</div>
@@ -279,11 +274,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <div class="bg-[#121215] border border-[#232327] rounded-xl p-4 text-xs space-y-2 mb-4 font-mono">
           <div class="flex justify-between border-b border-[#232327] pb-2">
             <span class="text-gray-400">Folio:</span>
-            <span id="receipt-id" class="text-white">ABC-MP-000000</span>
+            <span id="receipt-id" class="text-white">ABC-000000</span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-400">Enviado a:</span>
-            <span id="receipt-email" class="text-volt truncate max-w-[200px]">alumno@correo.com</span>
+            <span id="receipt-email" class="text-[--volt] truncate max-w-[200px]">alumno@correo.com</span>
           </div>
           <div class="border-t border-[#232327] pt-2">
             <span class="text-gray-400 block mb-1">Conceptos pagados:</span>
@@ -452,7 +447,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       grid.appendChild(card);
     });
 
-    // 3. Módulo de Calendario Interactivo con Doble Tarifa y Nombres
+    // 3. Módulo de Calendario (Lunes a Viernes)
     const SCHEDULED_CLASSES = {
       // Septiembre 2026
       "2026-09-07": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
@@ -491,17 +486,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const year = parseInt(yearStr, 10);
       const month = parseInt(monthStr, 10) - 1;
 
-      // Determinar en qué día de la semana cae el día 1
       const firstDayDate = new Date(year, month, 1);
       const firstDayWeekDay = firstDayDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
 
-      // Desplazamiento inicial para Lunes a Viernes (0 = Lun, 1 = Mar, 2 = Mié, 3 = Jue, 4 = Vie)
       let startingCol = 0;
       if (firstDayWeekDay >= 1 && firstDayWeekDay <= 5) {
         startingCol = firstDayWeekDay - 1;
       }
 
-      // Celdas vacías previas al primer día hábil del mes
       for (let i = 0; i < startingCol; i++) {
         const emptyCell = document.createElement("div");
         emptyCell.className = "h-24 md:h-28 rounded-xl bg-black/20 border border-transparent opacity-30";
@@ -510,15 +502,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      // Recorrer los días del mes y omitir Sábados y Domingos
       for (let day = 1; day <= daysInMonth; day++) {
         const checkDate = new Date(year, month, day);
         const dayOfWeek = checkDate.getDay();
 
-        // Omitir Domingo (0) y Sábado (6)
-        if (dayOfWeek === 0 || dayOfWeek === 6) {
-          continue;
-        }
+        if (dayOfWeek === 0 || dayOfWeek === 6) continue;
 
         const dayFormatted = String(day).padStart(2, "0");
         const dateKey = `${yearStr}-${monthStr}-${dayFormatted}`;
@@ -653,7 +641,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         document.getElementById("checkout-btn")?.click();
       }
     });
-    
 
     // 4. Modal Checkout & Pasarela Oficial PayPal
     const modal = document.getElementById("checkout-modal");
@@ -705,7 +692,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
                 total_amount: totalFormatted,
                 items_list: itemsListText
               });
-              console.log("✓ Comprobante enviado por EmailJS.");
             } catch (err) {
               console.warn("Aviso EmailJS:", err);
             }
@@ -761,7 +747,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     document.getElementById("cart-close")?.addEventListener("click", () => Cart.toggleDrawer(false));
     document.getElementById("cart-overlay")?.addEventListener("click", () => Cart.toggleDrawer(false));
 
-    // Inicializaciones al arrancar
+    // Inicializaciones
     Cart.render();
     renderCalendar(currentMonthView);
   </script>
