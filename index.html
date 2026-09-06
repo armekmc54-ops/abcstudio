@@ -404,7 +404,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     });
 
     // 3. Módulo de Calendario Interactivo
-    // Catálogo exacto de Clases Sueltas (Drop-in - $80 MXN)
     const SCHEDULED_CLASSES = {
       // Septiembre 2026
       "2026-09-07": { id: 5, name: "Conte Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
@@ -427,7 +426,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       "2026-09-30": { id: 5, name: "Heels Principiantes", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Aley L.", desc: "Clase suelta de Heels nivel principiantes." },
 
       // Octubre 2026
-      "2026-10-01": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Por confirmar", desc: "Clase suelta de Técnica Variada nivel abierto." }
+      "2026-10-01": { id: 5, name: "Tec. Variada (Nivel Abierto)", type: "drop_in", price: 80, time: "18:30 - 20:00", instructor: "Soto M.", desc: "Clase suelta de Técnica Variada nivel abierto." }
     };
 
     let currentMonthView = "2026-09";
@@ -448,7 +447,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
       for (let i = 0; i < startingCol; i++) {
         const emptyCell = document.createElement("div");
-        emptyCell.className = "h-20 md:h-24 rounded-xl bg-black/20 border border-transparent opacity-30";
+        emptyCell.className = "h-24 md:h-28 rounded-xl bg-black/20 border border-transparent opacity-30";
         gridCal.appendChild(emptyCell);
       }
 
@@ -458,7 +457,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         const classInfo = SCHEDULED_CLASSES[dateKey];
 
         const cell = document.createElement("div");
-        cell.className = `h-20 md:h-24 p-2 rounded-xl border flex flex-col justify-between text-left transition ${
+        cell.className = `h-24 md:h-28 p-2 rounded-xl border flex flex-col justify-between text-left transition ${
           classInfo 
             ? "border-[--line] bg-[#1a1a22] hover:border-[--volt] cursor-pointer" 
             : "border-[--line]/40 bg-black/10 opacity-60"
@@ -467,14 +466,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         let contentHtml = `<span class="font-mono text-xs font-semibold ${classInfo ? 'text-white' : 'text-gray-500'}">${day}</span>`;
 
         if (classInfo) {
-          const isWorkshop = classInfo.type === "workshop";
-          const tagColor = isWorkshop ? "var(--violet)" : "var(--volt)";
+          const tagColor = "var(--volt)";
           contentHtml += `
-            <div class="mt-1">
-              <p class="text-[10px] font-semibold truncate leading-tight" style="color:${tagColor}">${classInfo.name}</p>
-              <span class="text-[9px] font-mono text-gray-400 block truncate">${classInfo.time}</span>
+            <div class="mt-0.5 overflow-hidden">
+              <p class="text-[10px] font-bold truncate leading-tight" style="color:${tagColor}">${classInfo.name}</p>
+              <p class="text-[9px] font-semibold text-white truncate leading-tight mt-0.5">👤 ${classInfo.instructor}</p>
+              <span class="text-[8px] font-mono text-gray-400 block truncate">${classInfo.time}</span>
             </div>
-            <span class="text-[10px] font-mono font-bold text-right block text-white mt-auto">$${classInfo.price}</span>
+            <span class="text-[10px] font-mono font-bold text-right block text-[--volt] mt-auto">$${classInfo.price}</span>
           `;
           cell.addEventListener("click", () => openClassModal(dateKey, classInfo));
         }
@@ -508,9 +507,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       document.getElementById("cal-modal-date").textContent = dateStr;
       
       const badge = document.getElementById("cal-modal-badge");
-      badge.textContent = classInfo.type === "workshop" ? "Taller" : "Clase Suelta";
-      badge.style.background = classInfo.type === "workshop" ? "var(--violet)" : "var(--volt)";
-      badge.style.color = classInfo.type === "workshop" ? "#ffffff" : "var(--ink)";
+      badge.textContent = "Clase Suelta";
+      badge.style.background = "var(--volt)";
+      badge.style.color = "var(--ink)";
 
       document.getElementById("calendar-class-modal").classList.add("open");
     }
@@ -523,12 +522,25 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       if (selectedClassData) {
         Cart.add({
           id: selectedClassData.id,
-          name: `${selectedClassData.name} (${selectedClassData.date})`,
+          name: `${selectedClassData.name} - ${selectedClassData.instructor} (${selectedClassData.date})`,
           price: selectedClassData.price
         });
         closeClassModal();
       }
     });
+
+    document.getElementById("cal-modal-pay-btn")?.addEventListener("click", () => {
+      if (selectedClassData) {
+        Cart.add({
+          id: selectedClassData.id,
+          name: `${selectedClassData.name} - ${selectedClassData.instructor} (${selectedClassData.date})`,
+          price: selectedClassData.price
+        });
+        closeClassModal();
+        document.getElementById("checkout-btn")?.click();
+      }
+    });
+    
 
     document.getElementById("cal-modal-pay-btn")?.addEventListener("click", () => {
       if (selectedClassData) {
