@@ -343,19 +343,20 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   <script>
     emailjs.init("jnFg7r-jjzdJHXe6b");
 
-   const FEATURED_PRODUCTS = [
-      { id: 99, name: "Prueba de Pago (Test Item)", type: "drop_in", price: 15.00, description: "Ítem de validación de pasarela oficial ABC Studio." },
+  const FEATURED_PRODUCTS = [
       { id: 20, name: "Combo 2 Cursos (Elección Libre)", type: "workshop", price: 500.00, description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN.", isCourseBundle: true, bundleLimit: 2 },
       { id: 21, name: "Combo 3 Cursos (Elección Libre)", type: "workshop", price: 700.00, description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN.", isCourseBundle: true, bundleLimit: 3 },
-      { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." }
+      { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes." },
+      { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, description: "Curso de 4 clases para principiantes. Lunes 6:30pm - 8:00pm." },
+      { id: 3, name: "Curso Heels & Sillas", type: "workshop", price: 300.00, description: "Curso de 4 clases en técnica de heels y trabajo en silla. Miércoles 6:30pm - 8:00pm." },
+      { id: 4, name: "Curso Técnica Variada", type: "workshop", price: 300.00, description: "Curso de 4 clases enfocado en técnica mixta y nivel abierto." }
     ];
 
     // Lista de cursos disponibles para que el alumno elija al comprar un combo
     const AVAILABLE_COURSES = [
       "Curso Contemporáneo Principiantes (Lun 18:30)",
-      "Curso Urbanos Principiantes (Mar 18:30)",
       "Curso Heels & Sillas (Mié 18:30)",
-      "Curso Urbanos Avanzados (Jue 18:30)"
+      "Curso Técnica Variada (Jue 18:30)"
     ];
 
     const TYPE_META = {
