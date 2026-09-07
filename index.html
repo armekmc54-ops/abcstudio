@@ -954,5 +954,128 @@ function confirmBundleAddToCart() {
     Cart.render();
     renderCalendar(currentMonthView);
   </script>
+
+  <!-- Widget Flotante de Chatbot IA y WhatsApp -->
+<div id="abc-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+  
+  <!-- Ventana del Chatbot (Oculta por defecto) -->
+  <div id="chat-window" class="hidden w-80 sm:w-96 bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden mb-4 transition-all duration-300">
+    <!-- Encabezado del Chat -->
+    <div class="bg-gradient-to-r from-zinc-800 to-zinc-900 p-4 border-b border-zinc-700 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="w-3 h-3 bg-lime-400 rounded-full animate-pulse"></div>
+        <div>
+          <h3 class="text-white font-bold text-sm">Asistente ABC Studio</h3>
+          <p class="text-xs text-zinc-400">Responde en segundos</p>
+        </div>
+      </div>
+      <button onclick="toggleChat()" class="text-zinc-400 hover:text-white text-lg font-bold px-2">&times;</button>
+    </div>
+
+    <!-- Cuerpo de Mensajes -->
+    <div id="chat-messages" class="p-4 h-72 overflow-y-auto space-y-3 text-sm text-zinc-200 bg-zinc-950/50">
+      <div class="bg-zinc-800 p-3 rounded-xl rounded-tl-none max-w-[85%]">
+        ¡Hola! 👋 Soy el asistente virtual de **ABC Studio**. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre nuestras clases, promos o reservas.
+      </div>
+    </div>
+
+    <!-- Opciones / Preguntas Rápidas -->
+    <div class="p-2 bg-zinc-900 border-t border-zinc-800 flex flex-wrap gap-1.5">
+      <button onclick="sendPreset('¿De qué tratan las clases?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-lime-400 px-2.5 py-1 rounded-full transition">¿De qué tratan?</button>
+      <button onclick="sendPreset('¿Qué es Heels Dance?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-lime-400 px-2.5 py-1 rounded-full transition">¿Qué es Heels?</button>
+      <button onclick="sendPreset('¿Cuáles son las promos?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-lime-400 px-2.5 py-1 rounded-full transition">Promociones</button>
+      <button onclick="sendPreset('Clases especiales')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-lime-400 px-2.5 py-1 rounded-full transition">Colaboraciones</button>
+    </div>
+
+    <!-- Campo de Entrada -->
+    <div class="p-3 bg-zinc-900 border-t border-zinc-800 flex items-center space-x-2">
+      <input type="text" id="chat-input" placeholder="Escribe tu duda..." class="flex-1 bg-zinc-800 border border-zinc-700 text-white text-sm rounded-xl px-3 py-2 focus:outline-none focus:border-lime-400" onkeypress="handleKeyPress(event)">
+      <button onclick="handleUserMessage()" class="bg-lime-400 hover:bg-lime-500 text-zinc-950 font-bold px-4 py-2 rounded-xl text-sm transition">Enviar</button>
+    </div>
+  </div>
+
+  <!-- Botones Flotantes (IA Chat + WhatsApp Directo) -->
+  <div class="flex flex-col space-y-3 items-end">
+    <!-- Botón de WhatsApp Directo para Reservas en Efectivo/Transferencia -->
+    <a href="https://wa.me/5214443211123?text=Hola,%20quiero%20reservar%20una%20clase%20pago%20en%20efectivo%20o%20transferencia" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-lg flex items-center justify-center transition transform hover:scale-105 group relative" title="Reservar por WhatsApp">
+      <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+      </svg>
+      <!-- Tooltip explicativo -->
+      <span class="absolute right-14 bg-zinc-900 text-zinc-200 text-xs px-2.5 py-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap border border-zinc-700">Reserva efectivo/transferencia</span>
+    </a>
+
+    <!-- Botón para abrir/cerrar el Chatbot IA -->
+    <button onclick="toggleChat()" class="bg-lime-400 hover:bg-lime-500 text-zinc-950 p-3.5 rounded-full shadow-lg flex items-center justify-center transition transform hover:scale-105">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<!-- Lógica JavaScript del Chatbot -->
+<script>
+  function toggleChat() {
+    const chatWindow = document.getElementById('chat-window');
+    chatWindow.classList.toggle('hidden');
+  }
+
+  function sendPreset(text) {
+    document.getElementById('chat-input').value = text;
+    handleUserMessage();
+  }
+
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') {
+      handleUserMessage();
+    }
+  }
+
+  function appendMessage(sender, text) {
+    const messagesContainer = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+    
+    if (sender === 'user') {
+      msgDiv.className = "flex justify-end";
+      msgDiv.innerHTML = `<div class="bg-lime-400 text-zinc-950 p-3 rounded-xl rounded-tr-none max-w-[85%] font-medium">${text}</div>`;
+    } else {
+      msgDiv.className = "flex justify-start";
+      msgDiv.innerHTML = `<div class="bg-zinc-800 text-zinc-200 p-3 rounded-xl rounded-tl-none max-w-[85%]">${text}</div>`;
+    }
+    
+    messagesContainer.appendChild(msgDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  function handleUserMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    appendMessage('user', text);
+    input.value = '';
+
+    // Simular respuesta inteligente del Bot basada en palabras clave
+    setTimeout(() => {
+      const lowerText = text.toLowerCase();
+      let reply = "¡Excelente pregunta! Para darte una atención más personalizada o apartar tu lugar, escríbeme directamente a nuestro WhatsApp oficial dando clic en el ícono verde de abajo.";
+
+      if (lowerText.includes('tratan') || lowerText.includes('clases') || lowerText.includes('curso')) {
+        reply = "Nuestras clases están diseñadas para todos los niveles: Contamos con <b>Contemporáneo</b> (lunes 17:30), <b>Urbanos</b>, <b>Heels & Sillas</b> y <b>Técnica Variada / Clases especiales de Soto M.</b> ¡Cada una enfoca técnica, expresión y acondicionamiento!";
+      } else if (lowerText.includes('heels') || lowerText.includes('tacones')) {
+        reply = "Las clases de <b>Heels Dance</b> combinan técnica de baile en tacones, sensualidad, postura, manejo de peso y coreografías increíbles en silla y suelo. ¡Ideales para ganar seguridad!";
+      } else if (lowerText.includes('promo') || lowerText.includes('paquete') || lowerText.includes('combo')) {
+        reply = "¡Tenemos excelentes promos! Manejamos <b>Combos de 2 y 3 cursos</b> (elección libre), clases sueltas (Drop-In individual o promoción de 3 por $180) y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
+      } else if (lowerText.includes('especial') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('invitado')) {
+        reply = "¡Sí! Frecuentemente organizamos <b>clases especiales de colaboración</b> con instructores invitados (como Soto M. y otros talentos) para explorar fusiones únicas de estilos.";
+      } else if (lowerText.includes('whatsapp') || lowerText.includes('contacto') || lowerText.includes('reservar')) {
+        reply = `¡Claro! Te redirijo con mucho gusto a nuestro WhatsApp para coordinar tu pago en efectivo o transferencia. <br><br><a href="https://wa.me/5214443211123?text=Hola,%20quiero%20más%20información%20o%20reservar" target="_blank" class="text-lime-400 underline font-bold">Haz clic aquí para abrir WhatsApp</a>`;
+      }
+
+      appendMessage('bot', reply);
+    }, 600);
+  }
+</script>
 </body>
 </html>
