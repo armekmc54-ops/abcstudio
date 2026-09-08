@@ -1035,10 +1035,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           reply = "🤖 <b>Tarifas registradas:</b> Clases sueltas (Drop-In) a $80 MXN o promo de 3 por $180 MXN. Contamos con <b>Combos de 2 y 3 cursos</b> (elección libre) y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
         } else if (lowerText.includes('especial') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('invitado') || lowerText.includes('soto')) {
           reply = "🤖 <b>Eventos y Colabs:</b> Sí, el sistema registra clases especiales de colaboración en jueves con instructores invitados de gran nivel como <b>Soto M.</b> para explorar fusiones urbanas y contemporáneas.";
+        } else if (lowerText.includes('ubicacion') || lowerText.includes('donde') || lowerText.includes('direccion') || lowerText.includes('dónde') || lowerText.includes('lugar') || lowerText.includes('mapa')) {
+          reply = `🤖 <b>Ubicación del estudio:</b> Nos encontramos en <b>C. Independencia 2800, Himno Nacional 1ra Secc, 78280 San Luis Potosí, S.L.P.</b><br><br><a href="https://maps.app.goo.gl/acnht7dnnSietS4j8" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">📍 Ver en Google Maps</a>`;
         } else {
-          reply = `🤖 Analizando tu consulta... Mi base de datos principal cubre los datos del estudio, pero para esta pregunta específica o una atención totalmente personalizada, te recomiendo conectar directo con el equipo humano.<br><br><a href="https://wa.me/5214443211123?text=Hola,%20tengo%20una%20duda%20específica%20desde%20el%20chatbot:%20${encodeURIComponent(text)}" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">💬 Resolver en WhatsApp</a>`;
+          reply = `🤖 Analizando tu consulta... Mi base de datos principal cubre los datos del estudio, pero para esta pregunta específica o una atención totalmente personalizada, te recomiendo conectar directo con el equipo humano.<br><br><a href="https://wa.me/521TU_NUMERO_AQUI?text=Hola,%20tengo%20una%20duda%20específica%20desde%20el%20chatbot:%20${encodeURIComponent(text)}" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">💬 Resolver en WhatsApp</a>`;
         }
-
         appendMessage('bot', reply);
       }, 600);
     }
