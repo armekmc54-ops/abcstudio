@@ -357,30 +357,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const skeletonGrid = document.getElementById("skeleton-grid");
       const productGrid = document.getElementById("product-grid");
 
-      try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const data = await response.json();
-        PRODUCTS = data.map(item => ({
-          id: item.id,
-          name: item.name,
-          type: item.type,
-          price: parseFloat(item.price),
-          category: item.category || 'General',
-          isGroup: Boolean(item.isGroup),
-          isCourseBundle: Boolean(item.isCourseBundle), // 👈 Agregar
-          bundleLimit: item.bundleLimit || 0,           // 👈 Agregar
-          description: item.description || (item.type === 'merch' ? 'Producto oficial ABC Studio' : 'Acceso y sesiones de danza oficial.'),
-          variants: item.type === 'merch' ? ["S", "M", "L", "XL"] : null
-        }));
-      } catch (err) {
-        PRODUCTS = FALLBACK_PRODUCTS;
-      } finally {
-        if (skeletonGrid) skeletonGrid.classList.add("hidden");
-        if (productGrid) productGrid.classList.remove("hidden");
-        renderProducts();
-      }
+      PRODUCTS = FALLBACK_PRODUCTS;
+      
+      if (skeletonGrid) skeletonGrid.classList.add("hidden");
+      if (productGrid) productGrid.classList.remove("hidden");
+      renderProducts();
     }
 
     // 2. Gestor de Carrito
