@@ -328,7 +328,28 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
   </div>
 
   <div id="toast" class="toast"></div>
-
+  
+  <!-- Sección de Mapa de Ubicación -->
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pb-16 fade-in-up">
+    <div class="mb-6">
+      <span class="font-mono text-xs uppercase tracking-widest text-[--volt]">Encuéntranos</span>
+      <h2 class="font-display text-2xl md:text-3xl text-white mt-1">Ubicación del Estudio</h2>
+      <p class="text-xs text-gray-400 mt-1">C. Independencia 2800, Himno Nacional 1ra Secc, 78280 San Luis Potosí, S.L.P.</p>
+    </div>
+    
+    <div class="rounded-2xl overflow-hidden border border-[--line] shadow-2xl bg-[--panel]">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3695.534884390001!2d-100.993425!3d22.13845!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x842a259c60e0a0a1%3A0x1!2sC.%20Independencia%202800%2C%20Himno%20Nacional%201ra%20Secc%2C%2078280%20San%20Luis%20Potos%C3%AD%2C%20S.L.P.!5e0!3m2!1ses-419!2smx!4v1710000000000!5m2!1ses-419!2smx" 
+        width="100%" 
+        height="350" 
+        style="border:0; filter: invert(90%) hue-rotate(180deg);" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+    </div>
+  </section>
+  
   <footer class="max-w-5xl mx-auto px-6 md:px-10 py-10 border-t text-sm mt-12" style="border-color:var(--line); color:var(--muted)">
     © 2026 ABC Studio — C. Independencia 2800, San Luis Potosí, S.L.P.
   </footer>
@@ -1031,10 +1052,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           reply = "🤖 <b>Análisis de clases:</b> Contamos con <b>Contemporáneo Principiantes</b> (Lunes 17:30 a 19:00 hrs), <b>Urbanos</b> (Martes), <b>Heels & Sillas</b> (Miércoles) y <b>Técnica Variada / Clases especiales los jueves</b> impartidas por diferentes maestros como Antonio H., Axel C. x Zitro D., Dany F. x Aley L., y Soto M.";
         } else if (lowerText.includes('heels') || lowerText.includes('tacones')) {
           reply = "🤖 <b>Definición Heels Dance:</b> Es una disciplina enfocada en el baile sobre tacones que potencia la postura, la fuerza en el core, la seguridad personal y la ejecución de coreografías dinámicas en suelo y silla.";
+        } else if (lowerText.includes('axel') || lowerText.includes('zitro') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('especial')) {
+          reply = "🤖 <b>Costo de clase en colaboración:</b> La sesión especial de colaboración (como la de Axel con Zitro u otras parejas de maestros) tiene un costo preferencial de <b>$120 MXN por una persona</b> o la promo grupal de <b>$200 MXN para 3 personas</b>.";
         } else if (lowerText.includes('promo') || lowerText.includes('paquete') || lowerText.includes('combo') || lowerText.includes('precio') || lowerText.includes('costo')) {
-          reply = "🤖 <b>Tarifas registradas:</b> Clases sueltas (Drop-In) a $80 MXN o promo de 3 por $180 MXN. Contamos con <b>Combos de 2 y 3 cursos</b> (elección libre) y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
-        } else if (lowerText.includes('especial') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('invitado') || lowerText.includes('soto')) {
-          reply = "🤖 <b>Eventos y Colabs:</b> Sí, el sistema registra clases especiales y colaboraciones los jueves con distintos instructores invitados como Antonio H., Axel C., Zitro D., Dany F., Aley L. y Soto M.";
+          reply = "🤖 <b>Tarifas registradas:</b> Clases sueltas regulares a $80 MXN (o 3 por $180 MXN). Las clases especiales de colaboración cuestan $120 MXN individual o $200 MXN para 3 personas. También contamos con <b>Combos de 2 y 3 cursos</b> y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
         } else if (lowerText.includes('ubicacion') || lowerText.includes('ubicación') || lowerText.includes('direccion') || lowerText.includes('dónde') || lowerText.includes('donde') || lowerText.includes('lugar') || lowerText.includes('mapa')) {
           reply = `🤖 <b>Ubicación del estudio:</b> Nos encontramos en <b>C. Independencia 2800, Himno Nacional 1ra Secc, 78280 San Luis Potosí, S.L.P.</b><br><br><a href="https://maps.app.goo.gl/acnht7dnnSietS4j8" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">📍 Ver en Google Maps</a>`;
         } else {
