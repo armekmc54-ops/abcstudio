@@ -485,13 +485,21 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       return { show };
     })();
 
-    const grid = document.getElementById("featured-grid");
+   const grid = document.getElementById("featured-grid");
+    grid.innerHTML = "";
     FEATURED_PRODUCTS.forEach(p => {
       const meta = TYPE_META[p.type] || { label: "General", color: "var(--volt)" };
       const card = document.createElement("div");
-      card.className = "product-card";
+      card.className = "product-card flex flex-col justify-between";
+      
+      const thumbContent = p.image 
+        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">` 
+        : p.name;
+
       card.innerHTML = `
-        <div class="product-thumb" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">${p.name}</div>
+        <div class="product-thumb relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">
+          ${thumbContent}
+        </div>
         <div class="p-5 flex flex-col justify-between flex-1">
           <div>
             <span class="type-badge" style="background:${meta.color}; color:var(--ink)">${meta.label}</span>
