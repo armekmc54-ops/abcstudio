@@ -377,8 +377,30 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     emailjs.init("jnFg7r-jjzdJHXe6b");
 
     const FEATURED_PRODUCTS = [
-  { id: 20, name: "Combo 2 Cursos (Elección Libre)", type: "workshop", price: 500.00, description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN.", isCourseBundle: true, bundleLimit: 2 },
-  { id: 21, name: "Combo 3 Cursos (Elección Libre)", type: "workshop", price: 700.00, description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN.", isCourseBundle: true, bundleLimit: 3 },
+  { 
+  id: 20, 
+  name: "Combo 2 Cursos (Elección Libre)", 
+  type: "pack", 
+  price: 500.00, 
+  category: "Paquetes", 
+  description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN (Ahorro de $100 MXN).", 
+  image: "https://lh3.googleusercontent.com/d/1QhCpDHSYOAYqFDFtBUQDtgrXOXoJvPTu",
+  isCourseBundle: true, 
+  bundleLimit: 2, 
+  variants: null 
+},
+{ 
+  id: 21, 
+  name: "Combo 3 Cursos (Elección Libre)", 
+  type: "pack", 
+  price: 700.00, 
+  category: "Paquetes", 
+  description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN (Ahorro de $200 MXN).", 
+  image: "https://lh3.googleusercontent.com/d/1QDie6aN2MyRchCi-h3_UmzAMGHl8j-qN",
+  isCourseBundle: true, 
+  bundleLimit: 3, 
+  variants: null 
+},
   { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, category: "Membresías", description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes.", image: "https://lh3.googleusercontent.com/d/1PYqM3ITL5ed6OYakBnQ_DJuYNBykyiuU", variants: null },
   { id: 1, name: "Curso Contemporáneo Principiantes", type: "workshop", price: 300.00, description: "Curso de 4 clases para principiantes. Lunes 5:30pm - 7:00pm.", image: "https://lh3.googleusercontent.com/d/1m_BPwaayxcEB6x-J3UMV304uHiIySBvx" },
   { id: 2, name: "Curso Urbanos Principiantes", type: "workshop", price: 300.00, description: "Curso de 4 clases para principiantes. Martes 6:30pm - 8:00pm.", image: "https://lh3.googleusercontent.com/d/1-opRLgMiEgJ1R3dqKdRNBnCsogfjYuBN" },
