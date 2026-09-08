@@ -13,8 +13,27 @@
   --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#C6FF3D;
   --violet:#7B2FF7; --panel:#131316; --line:#232327; --muted:#8B8B93;
 }
-.product-thumb {
-  height: 420px; /* Altura grande idéntica al index */
+
+ .product-thumb { 
+  height: 480px; /* Recuadro más grande para PC */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  padding: 0 12px; 
+  font-family: 'Anton', sans-serif; 
+  font-size: 15px; 
+  color: rgba(244,243,241,.6); 
+  text-transform: uppercase; 
+}
+
+@media (max-width: 768px) {
+  .product-thumb {
+    height: 360px !important; /* Recuadro más grande para móviles */
+  }
+}
+/*.product-thumb {
+  height: 420px; /* Altura grande idéntica al index 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,7 +45,7 @@
   .product-thumb {
     height: 360px !important; 
   }
-}
+}*/
 body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; }
 .font-display{ font-family:'Anton',sans-serif; letter-spacing:.02em; }
 .font-mono{ font-family:'JetBrains Mono',monospace; }
