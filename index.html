@@ -13,9 +13,22 @@
   --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#C6FF3D;
   --violet:#7B2FF7; --panel:#131316; --line:#232327; --muted:#8B8B93;
 }
-  @media (max-width: 768px) {
+ .product-thumb { 
+  height: 360px; /* Altura generosa para PC */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  text-align: center; 
+  padding: 0 12px; 
+  font-family: 'Anton', sans-serif; 
+  font-size: 15px; 
+  color: rgba(244,243,241,.6); 
+  text-transform: uppercase; 
+}
+
+@media (max-width: 768px) {
   .product-thumb {
-    height: 220px !important;
+    height: 280px !important; /* Altura cómoda para dispositivos móviles */
   }
 }
 body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; }
@@ -497,13 +510,14 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       card.className = "product-card flex flex-col justify-between";
 
       const thumbContent = p.image 
-        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">` 
+        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain">` 
         : p.name;
 
       card.innerHTML = `
         <div class="product-thumb relative overflow-hidden flex items-center justify-center bg-zinc-950" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">
           ${thumbContent}
         </div>
+        
         <div class="p-5 flex flex-col justify-between flex-1">
           <div>
             <span class="type-badge" style="background:${meta.color}; color:var(--ink)">${meta.label}</span>
