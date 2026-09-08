@@ -485,7 +485,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       noProd.classList.toggle("hidden", filtered.length > 0);
       
       grid.innerHTML = filtered.map(p => {
-        const meta = TYPE_META[p.type] || { label: "General", color: "var(--volt)" };D
+        const meta = TYPE_META[p.type] || { label: "General", color: "var(--volt)" };
         const variantHtml = p.variants ? `
           <div class="mt-3 flex items-center justify-between">
             <span class="text-xs text-gray-400">Talla:</span>
