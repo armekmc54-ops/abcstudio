@@ -287,11 +287,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     let PRODUCTS = [];
 
     const TYPE_META = {
-      workshop: { label: "Curso / Taller", color: "var(--violet)" },
-      drop_in: { label: "Clase Suelta", color: "var(--volt)" },
-      pack: { label: "Paquete", color: "var(--volt)" },
-      membership: { label: "Membresía", color: "var(--pulse)" },
-      merch: { label: "Mercancía", color: "var(--pulse)" }
+    workshop: { label: "Curso / Taller", color: "var(--violet)" },
+    drop_in: { label: "Clase Suelta", color: "var(--volt)" },
+    pack: { label: "Paquete", color: "var(--volt)" },
+    membership: { label: "Membresía", color: "var(--pulse)" },
+    merch: { label: "Mercancía", color: "var(--pulse)" },
+    digital_course: { label: "Curso Digital", color: "var(--violet)" }
     };
 
     // Productos oficiales ABC Studio
@@ -307,7 +308,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 
       // Promociones Grupales
       { id: 15, name: "Promo Amigos Regular (3 Personas)", type: "pack", price: 180.00, category: "Paquetes", description: "Acceso para 3 personas en clase regular ($60 MXN c/u en una sola exhibición).", image: "https://lh3.googleusercontent.com/d/14Dqy0ES9edpC-nkHhBqNKUqP3Ufvq2re", isGroup: true, variants: null },
-{ id: 16, name: "Promo Colaboración (3 Personas)", type: "pack", price: 200.00, category: "Paquetes", description: "Acceso para 3 personas en clase de colaboración ($66.60 MXN c/u).", image: "https://lh3.googleusercontent.com/d/1_3YzeMjXlsCs8NfA5ZVKN_58Gzrcpnu3", isGroup: true, variants: null },
+      { id: 16, name: "Promo Colaboración (3 Personas)", type: "pack", price: 200.00, category: "Paquetes", description: "Acceso para 3 personas en clase de colaboración ($66.60 MXN c/u).", image: "https://lh3.googleusercontent.com/d/1_3YzeMjXlsCs8NfA5ZVKN_58Gzrcpnu3", isGroup: true, variants: null },
       // Ropa y Membresías
       { id: 9, name: "Sudadera Hoodie ABC", type: "merch", price: 300.00, category: "Mercancía", description: "Sudadera oficial ABC Studio con serigrafía de alta calidad.", image: "https://lh3.googleusercontent.com/d/154InIPktfYSSPkRAENHKZbcHKN69M_7D", variants: ["S", "M", "L", "XL"] },
       { id: 10, name: "Playera ABC (Negra)", type: "merch", price: 250.00, category: "Mercancía", description: "Playera oficial 100% algodón edición Black Edition.", image: "https://lh3.googleusercontent.com/d/1qwga9cxvEfVQ6O3JR0uEDW-mjSxUfB8l", variants: ["S", "M", "L", "XL"] },
@@ -338,6 +339,16 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       isCourseBundle: true, 
       bundleLimit: 3, 
       variants: null 
+    },
+      { 
+    id: 22, 
+    name: "Clase Digital Exclusiva", 
+    type: "digital_course", 
+    price: 250.00, 
+    category: "Digital", 
+    description: "Acceso inmediato al video de la clase completa para practicar en casa.", 
+    videoUrl: "https://drive.google.com/file/d/1pQvFfBr0sW4Mwtkv012wTbeFlZY1Nxes/preview",
+    variants: null 
     },
     ];
     
@@ -507,9 +518,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             </select>
           </div>` : "";
 
-        const thumbContent = p.image 
-          ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain">` 
-          : p.name;
+        const thumbContent = p.videoUrl 
+      ? `<iframe src="${p.videoUrl}" class="w-full h-full object-cover border-0 pointer-events-auto" allow="autoplay"></iframe>`
+      : (p.image 
+          ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;" class="font-display text-lg">${p.name}</span>` 
+          : p.name);
 
         return `
           <div class="product-card flex flex-col justify-between">
