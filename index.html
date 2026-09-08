@@ -493,7 +493,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       card.className = "product-card flex flex-col justify-between";
       
       const thumbContent = p.image 
-        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">` 
+        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain bg-zinc-950">` 
         : p.name;
 
       card.innerHTML = `
