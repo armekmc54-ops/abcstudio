@@ -103,7 +103,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </section>
 
-  <!-- Sección Calendario Interactivo (Lunes a Viernes) -->
+  <!-- Sección Calendario Interactivo -->
   <section class="max-w-5xl mx-auto px-6 md:px-10 pb-20 fade-in-up">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
       <div>
@@ -118,14 +118,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       </div>
     </div>
 
-    <!-- Cuadrícula del Calendario (5 columnas) -->
     <div class="bg-[--panel] border border-[--line] rounded-2xl p-5">
       <div class="grid grid-cols-5 gap-2 text-center font-mono text-xs text-gray-400 pb-3 border-b border-[--line]">
         <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span>
       </div>
-      <div id="calendar-days-grid" class="grid grid-cols-5 gap-2 pt-3">
-        <!-- Días generados por JS -->
-      </div>
+      <div id="calendar-days-grid" class="grid grid-cols-5 gap-2 pt-3"></div>
     </div>
   </section>
 
@@ -140,7 +137,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       <h3 id="cal-modal-title" class="font-display text-xl text-white mb-1">Nombre de la Clase</h3>
       <p id="cal-modal-desc" class="text-xs text-gray-400 mb-4">Detalles y profesor.</p>
       
-      <!-- Opciones de Tarifa -->
       <div class="space-y-2 mb-4">
         <label class="text-xs text-gray-400 block font-mono">Elige tu modalidad:</label>
         
@@ -170,22 +166,21 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         </label>
       </div>
 
-      <!-- Registro de Nombres para 3 personas -->
       <div id="group-names-container" class="hidden bg-black/40 border border-[#2e2e36] rounded-xl p-3 mb-4 space-y-2 text-xs">
         <div class="flex items-center justify-between">
           <p class="font-mono text-[11px] text-[--volt] uppercase tracking-wider font-semibold">Registro de los 3 Alumnos:</p>
           <span id="group-error-msg" class="hidden text-[10px] text-[--pulse] font-semibold">⚠ Llena todos los nombres</span>
         </div>
         <div>
-          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1 (Nombre y Apellido):</label>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 1:</label>
           <input type="text" id="student-name-1" placeholder="Ej. Carlos Mendoza" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
         </div>
         <div>
-          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2 (Nombre y Apellido):</label>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 2:</label>
           <input type="text" id="student-name-2" placeholder="Ej. Mariana López" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
         </div>
         <div>
-          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3 (Nombre y Apellido):</label>
+          <label class="text-[10px] text-gray-400 block mb-0.5">Alumno 3:</label>
           <input type="text" id="student-name-3" placeholder="Ej. Sofía Rivera" class="w-full bg-[#18181f] border border-[#2e2e36] rounded-lg px-2.5 py-1.5 text-xs text-white outline-none focus:border-[--volt]" />
         </div>
       </div>
@@ -231,7 +226,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </aside>
 
-<!-- Modal Selector de Cursos para Combos en Index -->
+  <!-- Modal Selector de Cursos para Combos -->
   <div id="bundle-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button onclick="closeBundleModal()" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
@@ -257,7 +252,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     </div>
   </div>
   
-  <!-- Modal Checkout con Tarjeta y PayPal -->
+  <!-- Modal Checkout -->
   <div id="checkout-modal" class="modal-overlay">
     <div class="modal-box p-6 relative">
       <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
@@ -267,29 +262,28 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         <span class="text-xs font-mono tracking-widest text-[--volt] uppercase">PayPal Checkout Gateway</span>
       </div>
 
-      <!-- Pantalla 1: Formulario de Pago -->
       <div id="modal-screen-pay">
         <h3 class="font-display text-xl mb-1">Pago Seguro con PayPal</h3>
         <p class="text-xs mb-4" style="color:var(--muted)">Transacción protegida procesada oficialmente por PayPal.</p>
 
         <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327] font-mono text-xs space-y-1.5">
-      <div class="flex justify-between text-gray-400">
-        <span>Costo de clase (Subtotal):</span>
-        <span id="summary-subtotal" class="text-white">$0.00 MXN</span>
-      </div>
-      <div class="flex justify-between text-gray-400">
-        <span>Comisión pasarela (PayPal):</span>
-        <span id="summary-fee" class="text-white">$0.00 MXN</span>
-      </div>
-      <div class="flex justify-between text-gray-400 pb-1.5 border-b border-[#232327]">
-        <span>IVA de procesamiento (16%):</span>
-        <span id="summary-vat" class="text-white">$0.00 MXN</span>
-      </div>
-      <div class="flex justify-between font-bold text-sm pt-0.5">
-        <span class="text-white">Total a pagar:</span>
-        <span id="modal-total" class="text-[--volt]">$0.00 MXN</span>
-      </div>
-    </div>
+          <div class="flex justify-between text-gray-400">
+            <span>Costo de clase (Subtotal):</span>
+            <span id="summary-subtotal" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>Comisión pasarela (PayPal):</span>
+            <span id="summary-fee" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between text-gray-400 pb-1.5 border-b border-[#232327]">
+            <span>IVA de procesamiento (16%):</span>
+            <span id="summary-vat" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between font-bold text-sm pt-0.5">
+            <span class="text-white">Total a pagar:</span>
+            <span id="modal-total" class="text-[--volt]">$0.00 MXN</span>
+          </div>
+        </div>
 
         <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
           <div>
@@ -300,7 +294,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         </form>
       </div>     
 
-      <!-- Pantalla 2: Éxito y Recibo -->
       <div id="modal-screen-success" class="hidden text-left py-2">
         <div class="text-center mb-4">
           <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-2 text-xl font-bold">✓</div>
@@ -340,10 +333,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     © 2026 ABC Studio — C. Independencia 2800, San Luis Potosí, S.L.P.
   </footer>
 
+  <!-- Script Principal de la Tienda y Calendario -->
   <script>
     emailjs.init("jnFg7r-jjzdJHXe6b");
 
-  const FEATURED_PRODUCTS = [
+    const FEATURED_PRODUCTS = [
       { id: 20, name: "Combo 2 Cursos (Elección Libre)", type: "workshop", price: 500.00, description: "Elige 2 cursos de 4 clases del catálogo por $500 MXN.", isCourseBundle: true, bundleLimit: 2 },
       { id: 21, name: "Combo 3 Cursos (Elección Libre)", type: "workshop", price: 700.00, description: "Elige 3 cursos de 4 clases del catálogo por $700 MXN.", isCourseBundle: true, bundleLimit: 3 },
       { id: 13, name: "Mensualidad Completa Ilimitada", type: "membership", price: 900.00, description: "Pase mensual total con acceso libre e ilimitado a todas las clases del mes." },
@@ -352,7 +346,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       { id: 4, name: "Curso Técnica Variada", type: "workshop", price: 300.00, description: "Curso de 4 clases enfocado en técnica mixta y nivel abierto." }
     ];
 
-    // Lista de cursos disponibles para que el alumno elija al comprar un combo
     const AVAILABLE_COURSES = [
       "Curso Contemporáneo Principiantes (Lun 17:30)",
       "Curso Urbanos Principiantes (Mar 18:30)",
@@ -367,7 +360,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
-    // 1. Manejo del Carrito
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
 
@@ -472,7 +464,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       return { show };
     })();
 
-    // 2. Render Destacados
     const grid = document.getElementById("featured-grid");
     FEATURED_PRODUCTS.forEach(p => {
       const meta = TYPE_META[p.type] || { label: "General", color: "var(--volt)" };
@@ -489,31 +480,25 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
           <div class="flex items-center justify-between mt-4 pt-3 border-t border-[#1e1e24]">
             <span class="font-mono font-bold text-sm text-white">$${p.price.toFixed(2)}</span>
             <button class="btn btn-primary btn-sm text-xs" onclick="handleFeaturedAddToCart(${p.id})">Agregar</button>
-           
           </div>
         </div>`;
       grid.appendChild(card);
     });
-
-  
 
     let pendingBundle = null;
 
     function handleFeaturedAddToCart(productId) {
       const product = FEATURED_PRODUCTS.find(p => p.id === productId);
       if (!product) return;
-
       if (product.isCourseBundle) {
         openBundleModal(product);
         return;
       }
-
       Cart.add(product);
     }
 
     function openBundleModal(bundleProduct) {
       pendingBundle = bundleProduct;
-      
       document.getElementById("bundle-modal-title").textContent = bundleProduct.name;
       document.getElementById("bundle-modal-desc").textContent = `Selecciona exactamente ${bundleProduct.bundleLimit} cursos:`;
       document.getElementById("bundle-modal-price").textContent = `$${bundleProduct.price.toFixed(2)} MXN`;
@@ -572,9 +557,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         }
       }
     }
-function confirmBundleAddToCart() {
-      if (!pendingBundle) return;
 
+    function confirmBundleAddToCart() {
+      if (!pendingBundle) return;
       const checked = Array.from(document.querySelectorAll(".bundle-chk:checked")).map(el => el.value);
       const errorMsg = document.getElementById("bundle-error-msg");
 
@@ -593,9 +578,7 @@ function confirmBundleAddToCart() {
       closeBundleModal();
     }
     
-    // 3. Módulo de Calendario (Lunes a Viernes)
     const SCHEDULED_CLASSES = {
-      // Septiembre 2026 (Actualizando lunes a 17:30 - 19:00)
       "2026-09-07": { id: 5, name: "Conte Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "17:30 - 19:00", instructor: "Fer Martínez", desc: "Clase suelta de Contemporáneo nivel principiantes." },
       "2026-09-08": { id: 5, name: "Urbanos Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Armando C.", desc: "Clase suelta de Danza Urbana nivel principiantes." },
       "2026-09-09": { id: 5, name: "Heels Principiantes", type: "drop_in", singlePrice: 80, groupPrice: 180, time: "18:30 - 20:00", instructor: "Dany F.", desc: "Clase suelta de Heels nivel principiantes." },
@@ -738,18 +721,15 @@ function confirmBundleAddToCart() {
       document.getElementById("cal-modal-desc").textContent = `${classInfo.desc} · Imparte: ${classInfo.instructor} (${classInfo.time})`;
       document.getElementById("cal-modal-date").textContent = dateStr;
     
-      // Actualiza los textos de las dos opciones del modal con el precio de esa clase
       const optSingle = document.getElementById("cal-modal-option-single-price");
       const optGroup = document.getElementById("cal-modal-option-group-price");
       if (optSingle) optSingle.textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
       if (optGroup) optGroup.textContent = `$${classInfo.groupPrice.toFixed(2)} MXN`;
 
-// 👉 AQUÍ SE PONE: Calcula y muestra el precio por persona de forma dinámica
       const perPerson = Math.round(classInfo.groupPrice / 3);
       const subText = document.getElementById("cal-modal-group-subtext");
       if (subText) subText.textContent = `$${perPerson} MXN c/u en un solo pago`;
       
-      // Precio inicial seleccionado (individual)
       document.getElementById("cal-modal-price").textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
     
       const badge = document.getElementById("cal-modal-badge");
@@ -808,28 +788,21 @@ function confirmBundleAddToCart() {
       }
     });
 
-    // 4. Modal Checkout & Pasarela Oficial PayPal con Desglose Fiscal
     const modal = document.getElementById("checkout-modal");
     const screenPay = document.getElementById("modal-screen-pay");
     const screenSuccess = document.getElementById("modal-screen-success");
 
-    // Cálculo exacto para absorber comisión e IVA garantizando el neto
     function calculatePaymentBreakdown(netAmount) {
       if (netAmount <= 0) return { net: 0, fee: 0, vat: 0, gross: 0 };
       
-      const variableRateWithTax = 0.0395 * 1.16; // 4.582%
-      const fixedFeeWithTax = 4.00 * 1.16;      // $4.64 MXN
+      const variableRateWithTax = 0.0395 * 1.16;
+      const fixedFeeWithTax = 4.00 * 1.16;
       const gross = (netAmount + fixedFeeWithTax) / (1 - variableRateWithTax);
       
       const gatewayFee = (gross * 0.0395) + 4.00;
       const vat = gatewayFee * 0.16;
 
-      return {
-        net: netAmount,
-        fee: gatewayFee,
-        vat: vat,
-        gross: gross
-      };
+      return { net: netAmount, fee: gatewayFee, vat: vat, gross: gross };
     }
 
     function renderPayPalButtons() {
@@ -839,21 +812,13 @@ function confirmBundleAddToCart() {
 
       if (window.paypal) {
         paypal.Buttons({
-          style: {
-            layout: 'vertical',
-            color:  'gold',
-            shape:  'rect',
-            label:  'paypal'
-          },
+          style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
           createOrder: function(data, actions) {
             const breakdown = calculatePaymentBreakdown(Cart.total());
             return actions.order.create({
               purchase_units: [{
                 description: "Pase de clase - ABC Studio México",
-                amount: {
-                  currency_code: "MXN",
-                  value: breakdown.gross.toFixed(2)
-                }
+                amount: { currency_code: "MXN", value: breakdown.gross.toFixed(2) }
               }]
             });
           },
@@ -922,7 +887,6 @@ function confirmBundleAddToCart() {
 
       const breakdown = calculatePaymentBreakdown(Cart.total());
       
-      // Actualizar desglose en pantalla
       document.getElementById("summary-subtotal").textContent = `$${breakdown.net.toFixed(2)} MXN`;
       document.getElementById("summary-fee").textContent = `$${breakdown.fee.toFixed(2)} MXN`;
       document.getElementById("summary-vat").textContent = `$${breakdown.vat.toFixed(2)} MXN`;
@@ -945,142 +909,139 @@ function confirmBundleAddToCart() {
       Toast.show("✓ Compra finalizada. Recibo generado.");
     }
 
-    // 5. Control de apertura y cierre del Carrito Lateral
     document.getElementById("cart-toggle")?.addEventListener("click", () => Cart.toggleDrawer(true));
     document.getElementById("cart-close")?.addEventListener("click", () => Cart.toggleDrawer(false));
     document.getElementById("cart-overlay")?.addEventListener("click", () => Cart.toggleDrawer(false));
 
-    // Inicializaciones
     Cart.render();
     renderCalendar(currentMonthView);
-   <!-- Widget Flotante de Chatbot Estilo "Robot Urbano IA" y WhatsApp -->
-<div id="abc-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
-  
-  <!-- Ventana del Chatbot (Oculta por defecto) -->
-  <div id="chat-window" class="hidden w-80 sm:w-96 bg-zinc-900 border border-[--volt] rounded-2xl shadow-2xl overflow-hidden mb-4 transition-all duration-300">
+  </script>
+
+  <!-- Widget Flotante de Chatbot Estilo "Robot Urbano IA" y WhatsApp -->
+  <div id="abc-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
     
-    <!-- Encabezado Estilo Robot Urbano con etiqueta IA -->
-    <div class="bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 p-4 border-b border-zinc-700 flex justify-between items-center">
-      <div class="flex items-center space-x-3">
-        <!-- Avatar Robot Urbano con indicador IA -->
-        <div class="relative w-9 h-9 bg-zinc-950 border border-[--volt] rounded-xl flex items-center justify-center shadow-[0_0_10px_rgba(198,255,61,0.3)]">
-          <span class="text-xs font-mono font-bold text-[--volt]">🤖</span>
-          <div class="absolute -top-1 -right-1 bg-[--volt] text-[--ink] text-[8px] font-black px-1 rounded-full uppercase tracking-tighter">IA</div>
-        </div>
-        <div>
-          <div class="flex items-center space-x-1.5">
-            <h3 class="text-white font-display tracking-wide text-sm">ABC BOT</h3>
-            <span class="bg-[--volt]/20 text-[--volt] border border-[--volt]/40 text-[9px] font-mono px-1.5 py-0.2 rounded uppercase">URBAN AI</span>
+    <!-- Ventana del Chatbot (Oculta por defecto) -->
+    <div id="chat-window" class="hidden w-80 sm:w-96 bg-zinc-900 border border-[--volt] rounded-2xl shadow-2xl overflow-hidden mb-4 transition-all duration-300">
+      
+      <!-- Encabezado Estilo Robot Urbano con etiqueta IA -->
+      <div class="bg-gradient-to-r from-zinc-900 via-zinc-800 to-zinc-900 p-4 border-b border-zinc-700 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="relative w-9 h-9 bg-zinc-950 border border-[--volt] rounded-xl flex items-center justify-center shadow-[0_0_10px_rgba(198,255,61,0.3)]">
+            <span class="text-xs font-mono font-bold text-[--volt]">🤖</span>
+            <div class="absolute -top-1 -right-1 bg-[--volt] text-[--ink] text-[8px] font-black px-1 rounded-full uppercase tracking-tighter">IA</div>
           </div>
-          <p class="text-[11px] text-zinc-400 font-mono">Conexión total activa</p>
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <h3 class="text-white font-display tracking-wide text-sm">ABC BOT</h3>
+              <span class="bg-[--volt]/20 text-[--volt] border border-[--volt]/40 text-[9px] font-mono px-1.5 py-0.2 rounded uppercase">URBAN AI</span>
+            </div>
+            <p class="text-[11px] text-zinc-400 font-mono">Conexión total activa</p>
+          </div>
+        </div>
+        <button onclick="toggleChat()" class="text-zinc-400 hover:text-white text-lg font-bold px-2">&times;</button>
+      </div>
+
+      <!-- Cuerpo de Mensajes -->
+      <div id="chat-messages" class="p-4 h-72 overflow-y-auto space-y-3 text-sm text-zinc-200 bg-zinc-950/70 font-sans">
+        <div class="bg-zinc-800 border border-zinc-700/50 p-3 rounded-xl rounded-tl-none max-w-[90%] text-xs leading-relaxed">
+          ¡Qué tal! 🤖 Soy el núcleo de inteligencia urbana de <b>ABC Studio</b>. Pregúntame lo que quieras sobre las clases, horarios, estilos o conceptos de baile. ¡Estoy programado para resolver cualquier duda!
         </div>
       </div>
-      <button onclick="toggleChat()" class="text-zinc-400 hover:text-white text-lg font-bold px-2">&times;</button>
-    </div>
 
-    <!-- Cuerpo de Mensajes -->
-    <div id="chat-messages" class="p-4 h-72 overflow-y-auto space-y-3 text-sm text-zinc-200 bg-zinc-950/70 font-sans">
-      <div class="bg-zinc-800 border border-zinc-700/50 p-3 rounded-xl rounded-tl-none max-w-[90%] text-xs leading-relaxed">
-        ¡Qué tal! 🤖 Soy el núcleo de inteligencia urbana de <b>ABC Studio</b>. Pregúntame lo que quieras sobre las clases, horarios, estilos o conceptos de baile. ¡Estoy programado para resolver cualquier duda!
+      <!-- Opciones / Preguntas Rápidas -->
+      <div class="p-2 bg-zinc-900 border-t border-zinc-800 flex flex-wrap gap-1.5">
+        <button onclick="sendPreset('¿De qué tratan las clases?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">¿De qué tratan?</button>
+        <button onclick="sendPreset('¿Qué es Heels Dance?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">¿Qué es Heels?</button>
+        <button onclick="sendPreset('¿Cuáles son las promos?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">Promociones</button>
+        <button onclick="sendPreset('Clases especiales')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">Colaboraciones</button>
+      </div>
+
+      <!-- Campo de Entrada -->
+      <div class="p-3 bg-zinc-900 border-t border-zinc-800 flex items-center space-x-2">
+        <input type="text" id="chat-input" placeholder="Pregúntale lo que sea al robot..." class="flex-1 bg-zinc-800 border border-zinc-700 text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-[--volt] font-mono" onkeypress="handleKeyPress(event)">
+        <button onclick="handleUserMessage()" class="bg-[--volt] hover:opacity-90 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-xs transition font-mono">Enviar</button>
       </div>
     </div>
 
-    <!-- Opciones / Preguntas Rápidas -->
-    <div class="p-2 bg-zinc-900 border-t border-zinc-800 flex flex-wrap gap-1.5">
-      <button onclick="sendPreset('¿De qué tratan las clases?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">¿De qué tratan?</button>
-      <button onclick="sendPreset('¿Qué es Heels Dance?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">¿Qué es Heels?</button>
-      <button onclick="sendPreset('¿Cuáles son las promos?')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">Promociones</button>
-      <button onclick="sendPreset('Clases especiales')" class="text-xs bg-zinc-800 hover:bg-zinc-700 text-[--volt] border border-zinc-700 px-2.5 py-1 rounded-full transition font-mono">Colaboraciones</button>
-    </div>
+    <!-- Botones Flotantes (IA Robot + WhatsApp Directo) -->
+    <div class="flex flex-col space-y-3 items-end">
+      <!-- Botón de WhatsApp Directo para Reservas en Efectivo/Transferencia -->
+      <a href="https://wa.me/521TU_NUMERO_AQUI?text=Hola,%20quiero%20reservar%20una%20clase%20pago%20en%20efectivo%20o%20transferencia" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-lg flex items-center justify-center transition transform hover:scale-105 group relative" title="Reservar por WhatsApp">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
+        </svg>
+        <span class="absolute right-14 bg-zinc-900 text-zinc-200 text-xs px-2.5 py-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap border border-zinc-700 font-mono">Reserva efectivo/transferencia</span>
+      </a>
 
-    <!-- Campo de Entrada -->
-    <div class="p-3 bg-zinc-900 border-t border-zinc-800 flex items-center space-x-2">
-      <input type="text" id="chat-input" placeholder="Pregúntale lo que sea al robot..." class="flex-1 bg-zinc-800 border border-zinc-700 text-white text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-[--volt] font-mono" onkeypress="handleKeyPress(event)">
-      <button onclick="handleUserMessage()" class="bg-[--volt] hover:opacity-90 text-zinc-950 font-bold px-4 py-2.5 rounded-xl text-xs transition font-mono">Enviar</button>
+      <!-- Botón Robot IA Flotante -->
+      <button onclick="toggleChat()" class="relative bg-zinc-900 hover:bg-zinc-800 text-[--volt] border-2 border-[--volt] p-3.5 rounded-full shadow-[0_0_15px_rgba(198,255,61,0.4)] flex items-center justify-center transition transform hover:scale-105">
+        <span class="absolute -top-2 -left-2 bg-[--volt] text-[--ink] text-[9px] font-black px-1.5 py-0.5 rounded-full font-mono uppercase">IA</span>
+        <span class="text-xl">🤖</span>
+      </button>
     </div>
   </div>
 
-  <!-- Botones Flotantes (IA Robot + WhatsApp Directo) -->
-  <div class="flex flex-col space-y-3 items-end">
-    <!-- Botón de WhatsApp Directo para Reservas en Efectivo/Transferencia -->
-    <a href="https://wa.me/521TU_NUMERO_AQUI?text=Hola,%20quiero%20reservar%20una%20clase%20pago%20en%20efectivo%20o%20transferencia" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white p-3.5 rounded-full shadow-lg flex items-center justify-center transition transform hover:scale-105 group relative" title="Reservar por WhatsApp">
-      <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
-      </svg>
-      <span class="absolute right-14 bg-zinc-900 text-zinc-200 text-xs px-2.5 py-1 rounded-md shadow-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap border border-zinc-700 font-mono">Reserva efectivo/transferencia</span>
-    </a>
+  <!-- Lógica JavaScript del Chatbot Robot Urbano -->
+  <script>
+    function toggleChat() {
+      const chatWindow = document.getElementById('chat-window');
+      chatWindow.classList.toggle('hidden');
+    }
 
-    <!-- Botón Robot IA Flotante -->
-    <button onclick="toggleChat()" class="relative bg-zinc-900 hover:bg-zinc-800 text-[--volt] border-2 border-[--volt] p-3.5 rounded-full shadow-[0_0_15px_rgba(198,255,61,0.4)] flex items-center justify-center transition transform hover:scale-105">
-      <span class="absolute -top-2 -left-2 bg-[--volt] text-[--ink] text-[9px] font-black px-1.5 py-0.5 rounded-full font-mono uppercase">IA</span>
-      <span class="text-xl">🤖</span>
-    </button>
-  </div>
-</div>
-
-<!-- Lógica JavaScript del Chatbot Robot Urbano -->
-<script>
-  function toggleChat() {
-    const chatWindow = document.getElementById('chat-window');
-    chatWindow.classList.toggle('hidden');
-  }
-
-  function sendPreset(text) {
-    document.getElementById('chat-input').value = text;
-    handleUserMessage();
-  }
-
-  function handleKeyPress(e) {
-    if (e.key === 'Enter') {
+    function sendPreset(text) {
+      document.getElementById('chat-input').value = text;
       handleUserMessage();
     }
-  }
 
-  function appendMessage(sender, text) {
-    const messagesContainer = document.getElementById('chat-messages');
-    const msgDiv = document.createElement('div');
-    
-    if (sender === 'user') {
-      msgDiv.className = "flex justify-end";
-      msgDiv.innerHTML = `<div class="bg-[--volt] text-zinc-950 p-3 rounded-xl rounded-tr-none max-w-[85%] font-medium text-xs">${text}</div>`;
-    } else {
-      msgDiv.className = "flex justify-start";
-      msgDiv.innerHTML = `<div class="bg-zinc-800 border border-zinc-700 text-zinc-200 p-3 rounded-xl rounded-tl-none max-w-[90%] text-xs leading-relaxed">${text}</div>`;
-    }
-    
-    messagesContainer.appendChild(msgDiv);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-  }
-
-  function handleUserMessage() {
-    const input = document.getElementById('chat-input');
-    const text = input.value.trim();
-    if (!text) return;
-
-    appendMessage('user', text);
-    input.value = '';
-
-    // Procesamiento con IA simulada para responder cualquier pregunta o redirigir a WhatsApp
-    setTimeout(() => {
-      const lowerText = text.toLowerCase();
-      let reply = "";
-
-      if (lowerText.includes('tratan') || lowerText.includes('clases') || lowerText.includes('curso') || lowerText.includes('horario')) {
-        reply = "🤖 <b>Análisis de clases:</b> Contamos con <b>Contemporáneo Principiantes</b> (Lunes 17:30 a 19:00 hrs), <b>Urbanos</b>, <b>Heels & Sillas</b> y clases especiales los jueves con <b>Soto M.</b> Cada sesión está optimizada para desarrollar técnica y expresión corporal al máximo.";
-      } else if (lowerText.includes('heels') || lowerText.includes('tacones')) {
-        reply = "🤖 <b>Definición Heels Dance:</b> Es una disciplina enfocada en el baile sobre tacones que potencia la postura, la fuerza en el core, la seguridad personal y la ejecución de coreografías dinámicas en suelo y silla.";
-      } else if (lowerText.includes('promo') || lowerText.includes('paquete') || lowerText.includes('combo') || lowerText.includes('precio') || lowerText.includes('costo')) {
-        reply = "🤖 <b>Tarifas registradas:</b> Clases sueltas (Drop-In) a $80 MXN o promo de 3 por $180 MXN. Contamos con <b>Combos de 2 y 3 cursos</b> (elección libre) y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
-      } else if (lowerText.includes('especial') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('invitado') || lowerText.includes('soto')) {
-        reply = "🤖 <b>Eventos y Colabs:</b> Sí, el sistema registra clases especiales de colaboración en jueves con instructores invitados de gran nivel como <b>Soto M.</b> para explorar fusiones urbanas y contemporáneas.";
-      } else {
-        // Respuesta universal para cualquier otra pregunta con botón directo a WhatsApp
-        reply = `🤖 Analizando tu consulta... Mi base de datos principal cubre los datos del estudio, pero para esta pregunta específica o una atención totalmente personalizada, te recomiendo conectar directo con el equipo humano.<br><br><a href="https://wa.me/521TU_NUMERO_AQUI?text=Hola,%20tengo%20una%20duda%20específica%20desde%20el%20chatbot:%20${encodeURIComponent(text)}" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">💬 Resolver en WhatsApp</a>`;
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') {
+        handleUserMessage();
       }
+    }
 
-      appendMessage('bot', reply);
-    }, 600);
-  }
-</script>
+    function appendMessage(sender, text) {
+      const messagesContainer = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      
+      if (sender === 'user') {
+        msgDiv.className = "flex justify-end";
+        msgDiv.innerHTML = `<div class="bg-[--volt] text-zinc-950 p-3 rounded-xl rounded-tr-none max-w-[85%] font-medium text-xs">${text}</div>`;
+      } else {
+        msgDiv.className = "flex justify-start";
+        msgDiv.innerHTML = `<div class="bg-zinc-800 border border-zinc-700 text-zinc-200 p-3 rounded-xl rounded-tl-none max-w-[90%] text-xs leading-relaxed">${text}</div>`;
+      }
+      
+      messagesContainer.appendChild(msgDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function handleUserMessage() {
+      const input = document.getElementById('chat-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage('user', text);
+      input.value = '';
+
+      setTimeout(() => {
+        const lowerText = text.toLowerCase();
+        let reply = "";
+
+        if (lowerText.includes('tratan') || lowerText.includes('clases') || lowerText.includes('curso') || lowerText.includes('horario')) {
+          reply = "🤖 <b>Análisis de clases:</b> Contamos con <b>Contemporáneo Principiantes</b> (Lunes 17:30 a 19:00 hrs), <b>Urbanos</b>, <b>Heels & Sillas</b> y clases especiales los jueves con <b>Soto M.</b> Cada sesión está optimizada para desarrollar técnica y expresión corporal al máximo.";
+        } else if (lowerText.includes('heels') || lowerText.includes('tacones')) {
+          reply = "🤖 <b>Definición Heels Dance:</b> Es una disciplina enfocada en el baile sobre tacones que potencia la postura, la fuerza en el core, la seguridad personal y la ejecución de coreografías dinámicas en suelo y silla.";
+        } else if (lowerText.includes('promo') || lowerText.includes('paquete') || lowerText.includes('combo') || lowerText.includes('precio') || lowerText.includes('costo')) {
+          reply = "🤖 <b>Tarifas registradas:</b> Clases sueltas (Drop-In) a $80 MXN o promo de 3 por $180 MXN. Contamos con <b>Combos de 2 y 3 cursos</b> (elección libre) y la <b>Mensualidad Completa Ilimitada por $900 MXN</b>.";
+        } else if (lowerText.includes('especial') || lowerText.includes('colaboracion') || lowerText.includes('colab') || lowerText.includes('invitado') || lowerText.includes('soto')) {
+          reply = "🤖 <b>Eventos y Colabs:</b> Sí, el sistema registra clases especiales de colaboración en jueves con instructores invitados de gran nivel como <b>Soto M.</b> para explorar fusiones urbanas y contemporáneas.";
+        } else {
+          reply = `🤖 Analizando tu consulta... Mi base de datos principal cubre los datos del estudio, pero para esta pregunta específica o una atención totalmente personalizada, te recomiendo conectar directo con el equipo humano.<br><br><a href="https://wa.me/521TU_NUMERO_AQUI?text=Hola,%20tengo%20una%20duda%20específica%20desde%20el%20chatbot:%20${encodeURIComponent(text)}" target="_blank" class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md mt-1 font-mono">💬 Resolver en WhatsApp</a>`;
+        }
+
+        appendMessage('bot', reply);
+      }, 600);
+    }
+  </script>
 </body>
 </html>
