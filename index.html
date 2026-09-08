@@ -493,11 +493,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       card.className = "product-card flex flex-col justify-between";
       
       const thumbContent = p.image 
-        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-contain bg-zinc-950">` 
+        ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">` 
         : p.name;
 
       card.innerHTML = `
-        <div class="product-thumb relative overflow-hidden flex items-center justify-center" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">
+        <div class="product-thumb relative overflow-hidden flex items-center justify-center p-3" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">
           ${thumbContent}
         </div>
         <div class="p-5 flex flex-col justify-between flex-1">
