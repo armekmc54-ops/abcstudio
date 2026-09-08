@@ -521,9 +521,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         const thumbContent = p.videoUrl 
       ? `<iframe src="${p.videoUrl}" class="w-full h-full object-cover border-0 pointer-events-auto" allow="autoplay"></iframe>`
       : (p.image 
-          ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;" class="font-display text-lg">${p.name}</span>` 
-          : p.name);
-
+      ? `<img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span style="display:none;" class="font-display text-lg">${p.name}</span>`
         return `
           <div class="product-card flex flex-col justify-between">
             <div class="product-thumb relative overflow-hidden flex items-center justify-center bg-zinc-950" style="background:linear-gradient(150deg, ${meta.color}22, var(--panel))">
