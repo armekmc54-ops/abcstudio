@@ -507,6 +507,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         if (classInfo) {
           contentHtml += `<div class="mt-0.5 overflow-hidden"><p class="text-[10px] font-bold truncate text-[--volt]">${classInfo.name}</p><p class="text-[9px] font-semibold text-white truncate">👤 ${classInfo.instructor}</p><span class="text-[8px] font-mono text-gray-400">${classInfo.time}</span></div><div class="flex items-center justify-between text-[9px] font-mono mt-auto pt-1 border-t border-[#232327]"><span class="text-gray-400">1p: $${classInfo.singlePrice}</span><span class="text-[--volt]">3p: $${classInfo.groupPrice}</span></div>`;
           cell.addEventListener("click", () => openClassModal(dateKey, classInfo));
+          
         }
         cell.innerHTML = contentHtml;
         gridCal.appendChild(cell);
@@ -518,6 +519,11 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       document.getElementById("btn-month-oct").className = monthKey === "2026-10" ? "px-4 py-1.5 rounded-full text-xs font-semibold transition bg-[--volt] text-[--ink]" : "px-4 py-1.5 rounded-full text-xs font-semibold transition text-gray-400 hover:text-white";
       renderCalendar(monthKey);
     }
+    document.getElementById("calendar-class-modal").addEventListener("click", (e) => {
+      if (e.target.id === "calendar-class-modal") {
+        closeClassModal();
+      }
+    });
     function handlePricingOptionChange(type) {
       selectedBookingType = type;
       const groupContainer = document.getElementById("group-names-container");
