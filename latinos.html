@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ritmos Latinos — ABC Studio</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=BAA0RtrND_LSy6BIpASFUkXKEGSIn4iHfagM_5TH_zLs6U_WKsBDGeF0ADe1tYOiYnR160ptPlf25IMOpQ&currency=MXN&intent=capture&components=buttons"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{
+  --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#FF7A00;
+  --violet:#7B2FF7; --panel:#131316; --line:#232327; --muted:#8B8B93;
+}
+body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; }
+.font-display{ font-family:'Anton',sans-serif; letter-spacing:.02em; }
+.font-mono{ font-family:'JetBrains Mono',monospace; }
+.navbar{ position:sticky; top:0; z-index:40; background:rgba(11,11,13,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+.brand-dot{ color:var(--volt); }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:12px 22px; border-radius:999px; font-weight:600; font-size:14px; transition:transform .15s ease, opacity .15s ease; cursor:pointer; }
+.btn:active{ transform:scale(.97); }
+.btn-primary{ background:var(--volt); color:var(--ink); }
+.btn-primary:hover{ opacity:.88; }
+.btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--paper); }
+.btn-ghost:hover{ border-color:var(--paper); }
+.btn-sm{ padding:8px 14px; font-size:12px; }
+.product-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .18s ease, border-color .18s ease; display:flex; flex-direction:column; }
+.product-card:hover{ transform:translateY(-4px); border-color:#3a3a40; }
+.type-badge{ font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; padding:3px 9px; border-radius:999px; letter-spacing:.05em; font-weight:600; }
+.cart-overlay{ position:fixed; inset:0; background:rgba(11,11,13,.75); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:50; }
+.cart-overlay.open{ opacity:1; pointer-events:auto; }
+.cart-drawer{ position:fixed; top:0; right:0; height:100%; width:100%; max-width:400px; background:var(--panel); border-left:1px solid var(--line); transform:translateX(100%); transition:transform .25s ease; z-index:51; display:flex; flex-direction:column; }
+.cart-drawer.open{ transform:translateX(0); }
+.cart-badge{ position:absolute; top:-6px; right:-6px; background:var(--pulse); color:#fff; font-size:10px; font-weight:700; width:18px; height:18px; border-radius:50%; display:flex; align-items:center; justify-content:center; transform:scale(0); transition:transform .2s ease; }
+.cart-badge.show{ transform:scale(1); }
+.toast{ position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); background:var(--volt); color:var(--ink); font-weight:600; font-size:13px; padding:10px 20px; border-radius:999px; opacity:0; pointer-events:none; transition:transform .25s ease, opacity .25s ease; z-index:999; }
+.toast.show{ opacity:1; transform:translate(-50%,0); }
+.modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,0.85); backdrop-filter:blur(6px); z-index:70; display:flex; align-items:center; justify-content:center; padding:16px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+.modal-overlay.open{ opacity:1; pointer-events:auto; }
+.modal-box{ background:#16161a; border:1px solid var(--line); border-radius:20px; width:100%; max-width:440px; max-height:90vh; overflow-y:auto; transform:scale(0.95); transition:transform .2s ease; }
+.modal-overlay.open .modal-box{ transform:scale(1); }
+</style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar flex items-center justify-between px-6 md:px-10 py-4">
+    <a href="index.html" class="font-display text-xl tracking-wider">ABC<span class="brand-dot"> STUDIO (LATINOS)</span></a>
+    <nav class="hidden md:flex gap-8 text-sm" style="color:var(--muted)">
+      <a href="index.html" class="hover:text-white transition">Inicio</a>
+      <a href="catalog.html" class="hover:text-white transition">Catálogo General</a>
+    </nav>
+    <button id="cart-toggle" class="relative btn btn-ghost btn-sm">
+      <span>Carrito</span>
+      <span id="cart-badge" class="cart-badge">0</span>
+    </button>
+  </header>
+
+  <!-- Hero Sección Latinos -->
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pt-16 pb-12">
+    <p class="font-mono text-xs uppercase tracking-widest mb-3" style="color:var(--volt)">Módulo Especializado</p>
+    <h1 class="font-display text-4xl md:text-6xl text-white mb-4">Pura Sencillez y <span style="color:var(--volt)">Sabor Latino</span></h1>
+    <p class="max-w-xl text-sm md:text-base text-gray-400 leading-relaxed">
+      Domina los ritmos de salsa, bachata, cumbia y social dance. Clases diseñadas tanto para principiantes como para perfeccionar técnica en pareja.
+    </p>
+  </section>
+
+  <!-- Grid exclusivo de Latinos -->
+  <section class="max-w-5xl mx-auto px-6 md:px-10 pb-24">
+    <div id="latinos-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- Carrito Lateral -->
+  <div id="cart-overlay" class="cart-overlay"></div>
+  <aside id="cart-drawer" class="cart-drawer">
+    <div class="flex items-center justify-between px-5 py-4 border-b" style="border-color:var(--line)">
+      <p class="font-display text-lg">Tu carrito</p>
+      <button id="cart-close" class="text-xl px-2 leading-none hover:text-white" style="color:var(--muted)">✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto px-5 py-3">
+      <p id="cart-empty" class="text-sm py-14 text-center" style="color:var(--muted)">Tu carrito está vacío.</p>
+      <div id="cart-items"></div>
+    </div>
+    <div class="px-5 py-5 border-t" style="border-color:var(--line); background:#111114">
+      <div class="flex justify-between mb-4 font-mono text-sm">
+        <span style="color:var(--muted)">Total a Pagar</span>
+        <span id="cart-total" class="font-bold text-base" style="color:var(--volt)">$0.00 MXN</span>
+      </div>
+      <button id="checkout-btn" class="btn btn-primary w-full shadow-lg">Proceder al Pago Seguro</button>
+    </div>
+  </aside>
+
+  <!-- Modal Checkout Seguro con reCAPTCHA -->
+  <div id="checkout-modal" class="modal-overlay">
+    <div class="modal-box p-6 relative">
+      <button id="close-modal" class="absolute top-4 right-4 text-lg text-gray-400 hover:text-white">✕</button>
+      
+      <div class="flex items-center gap-2 mb-3">
+        <div class="w-3 h-3 rounded-full bg-blue-500 animate-ping"></div>
+        <span class="text-xs font-mono tracking-widest text-[--volt] uppercase">PayPal Secure Gateway</span>
+      </div>
+
+      <div id="modal-screen-pay">
+        <h3 class="font-display text-xl mb-1 text-white">Pago Seguro Latinos</h3>
+        <p class="text-xs mb-4 text-gray-400">Transacción protegida procesada por PayPal.</p>
+
+        <div class="bg-black/40 rounded-xl p-3 mb-4 border border-[#232327] font-mono text-xs space-y-1.5">
+          <div class="flex justify-between text-gray-400">
+            <span>Subtotal:</span>
+            <span id="summary-subtotal" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between text-gray-400">
+            <span>Comisión pasarela:</span>
+            <span id="summary-fee" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between text-gray-400 pb-1.5 border-b border-[#232327]">
+            <span>IVA (16%):</span>
+            <span id="summary-vat" class="text-white">$0.00 MXN</span>
+          </div>
+          <div class="flex justify-between font-bold text-sm pt-0.5">
+            <span class="text-white">Total a pagar:</span>
+            <span id="modal-total" class="text-[--volt]">$0.00 MXN</span>
+          </div>
+        </div>
+
+        <form id="payment-form" onsubmit="event.preventDefault()" class="space-y-3 text-xs">
+          <div>
+            <label class="block mb-1 text-gray-400">Correo Electrónico (para recibo)</label>
+            <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[--volt]" />
+          </div>
+
+          <!-- reCAPTCHA v2 -->
+          <div class="py-2 flex justify-center">
+            <div class="g-recaptcha" data-sitekey="6Ldd5bItAAAAAIi4_R3-QtYI6M89B82832ZULq09" data-theme="dark"></div>
+          </div>
+
+          <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
+        </form>
+      </div>
+
+      <div id="modal-screen-success" class="hidden text-left py-2">
+        <div class="text-center mb-4">
+          <div class="w-10 h-10 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center mx-auto mb-2 text-xl font-bold">✓</div>
+          <h4 class="font-display text-lg text-green-400">¡Inscripción Exitosa!</h4>
+          <p class="text-xs text-gray-400">Recibo oficial emitido y enviado por correo.</p>
+        </div>
+        <button onclick="finishCheckout()" class="btn btn-primary w-full py-2 text-xs">Finalizar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    emailjs.init("jnFg7r-jjzdJHXe6b");
+
+    const LATINOS_PRODUCTS = [
+      { id: 101, name: "Clase Social de Salsa & Bachata", type: "latinos", price: 90.00, description: "Pase individual de 1.5 hrs para técnica social en pareja y pasos libres.", image: "" },
+      { id: 102, name: "Taller Intensivo Cumbia & Casino", type: "latinos", price: 350.00, description: "Intensivo de fin de semana enfocado en rueda de casino y marcaciones de cumbia.", image: "" },
+      { id: 103, name: "Membresía Mensual Ritmos Latinos", type: "latinos", price: 800.00, description: "Acceso libre a todas las sesiones y sociales latinos del mes completo.", image: "" }
+    ];
+
+    const Cart = (() => {
+      let items = JSON.parse(localStorage.getItem("abc_latinos_cart") || "[]");
+      function save() { localStorage.setItem("abc_latinos_cart", JSON.stringify(items)); render(); }
+      function add(product) {
+        const existing = items.find(i => i.id === product.id);
+        if (existing) existing.qty += 1; else items.push({ ...product, qty: 1, key: product.id });
+        save(); Toast.show(`✓ ${product.name} agregado`); toggleDrawer(true);
+      }
+      function remove(key) { items = items.filter(i => i.key !== key); save(); }
+      function updateQty(key, delta) {
+        const item = items.find(i => i.key === key);
+        if (!item) return; item.qty += delta; if (item.qty <= 0) remove(key); else save();
+      }
+      function clear() { items = []; save(); }
+      function total() { return items.reduce((sum, item) => sum + item.price * item.qty, 0); }
+      function count() { return items.reduce((sum, item) => sum + item.qty, 0); }
+      function render() {
+        const list = document.getElementById("cart-items");
+        const totalEl = document.getElementById("cart-total");
+        const emptyEl = document.getElementById("cart-empty");
+        const badge = document.getElementById("cart-badge");
+        if (!list) return;
+        list.innerHTML = "";
+        emptyEl.classList.toggle("hidden", items.length > 0);
+        items.forEach(item => {
+          const row = document.createElement("div");
+          row.className = "flex items-center justify-between gap-3 py-3 border-b border-[#232327]";
+          row.innerHTML = `
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold truncate text-white">${item.name}</p>
+              <p class="text-xs font-mono text-gray-400">$${item.price.toFixed(2)} MXN</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center border rounded-lg overflow-hidden border-[#2a2a30] bg-[#1a1a20]">
+                <button onclick="Cart.updateQty('${item.key}', -1)" class="px-2 py-1 text-xs text-gray-400 hover:text-white">−</button>
+                <span class="px-2 text-xs font-mono text-white">${item.qty}</span>
+                <button onclick="Cart.updateQty('${item.key}', 1)" class="px-2 py-1 text-xs text-gray-400 hover:text-white">+</button>
+              </div>
+              <button onclick="Cart.remove('${item.key}')" class="p-1 text-gray-500 hover:text-red-400 text-xs">✕</button>
+            </div>`;
+          list.appendChild(row);
+        });
+        totalEl.textContent = `$${total().toFixed(2)} MXN`;
+        badge.textContent = count();
+        badge.classList.toggle("show", count() > 0);
+      }
+      function toggleDrawer(open) {
+        document.getElementById("cart-drawer").classList.toggle("open", open);
+        document.getElementById("cart-overlay").classList.toggle("open", open);
+      }
+      return { add, remove, updateQty, clear, total, count, render, toggleDrawer, items: () => items };
+    })();
+
+    const Toast = (() => {
+      let t;
+      function show(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg; el.classList.add("show");
+        clearTimeout(t); t = setTimeout(() => el.classList.remove("show"), 2200);
+      }
+      return { show };
+    })();
+
+    // Renderizar productos de latinos
+    const grid = document.getElementById("latinos-grid");
+    grid.innerHTML = LATINOS_PRODUCTS.map(p => `
+      <div class="product-card p-6 flex flex-col justify-between">
+        <div>
+          <span class="type-badge" style="background:var(--volt); color:var(--ink)">Latinos</span>
+          <p class="font-semibold text-base mt-3 text-white">${p.name}</p>
+          <p class="text-xs mt-2 text-gray-400 leading-relaxed">${p.description}</p>
+        </div>
+        <div class="flex items-center justify-between mt-6 pt-4 border-t border-[#232327]">
+          <span class="font-mono font-bold text-sm text-white">$${p.price.toFixed(2)}</span>
+          <button class="btn btn-primary btn-sm text-xs" onclick="Cart.add(LATINOS_PRODUCTS.find(x => x.id === ${p.id}))">Inscribirme</button>
+        </div>
+      </div>
+    `).join("");
+
+    const modal = document.getElementById("checkout-modal");
+    const screenPay = document.getElementById("modal-screen-pay");
+    const screenSuccess = document.getElementById("modal-screen-success");
+
+    function calculatePaymentBreakdown(netAmount) {
+      if (netAmount <= 0) return { net: 0, fee: 0, vat: 0, gross: 0 };
+      const variableRateWithTax = 0.0395 * 1.16;
+      const fixedFeeWithTax = 4.00 * 1.16;
+      const gross = (netAmount + fixedFeeWithTax) / (1 - variableRateWithTax);
+      const gatewayFee = (gross * 0.0395) + 4.00;
+      const vat = gatewayFee * 0.16;
+      return { net: netAmount, fee: gatewayFee, vat, gross };
+    }
+
+    function renderPayPalButtons() {
+      const container = document.getElementById("paypal-button-container");
+      if (!container) return;
+      container.innerHTML = "";
+      if (window.paypal) {
+        paypal.Buttons({
+          style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
+          createOrder: function(data, actions) {
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+              Toast.show("Por favor verifica que no eres un robot.");
+              throw new Error("reCAPTCHA no verificado");
+            }
+            const breakdown = calculatePaymentBreakdown(Cart.total());
+            return actions.order.create({
+              purchase_units: [{ description: "Inscripción Módulo Latinos - ABC Studio", amount: { currency_code: "MXN", value: breakdown.gross.toFixed(2) } }]
+            });
+          },
+          onApprove: async function(data, actions) {
+            const order = await actions.order.capture();
+            const emailInput = document.getElementById("payer-email-input")?.value;
+            const customerEmail = emailInput || "cliente@abcstudio.com";
+            const orderId = order.id || ("ABC-LAT-" + Math.floor(100000 + Math.random() * 900000));
+            
+            screenPay.classList.add("hidden");
+            screenSuccess.classList.remove("hidden");
+          }
+        }).render('#paypal-button-container');
+      }
+    }
+
+    document.getElementById("checkout-btn").addEventListener("click", () => {
+      if (Cart.items().length === 0) { Toast.show("Tu carrito está vacío."); return; }
+      const breakdown = calculatePaymentBreakdown(Cart.total());
+      document.getElementById("summary-subtotal").textContent = `$${breakdown.net.toFixed(2)} MXN`;
+      document.getElementById("summary-fee").textContent = `$${breakdown.fee.toFixed(2)} MXN`;
+      document.getElementById("summary-vat").textContent = `$${breakdown.vat.toFixed(2)} MXN`;
+      document.getElementById("modal-total").textContent = `$${breakdown.gross.toFixed(2)} MXN`;
+      screenPay.classList.remove("hidden");
+      screenSuccess.classList.add("hidden");
+      Cart.toggleDrawer(false);
+      modal.classList.add("open");
+      renderPayPalButtons();
+    });
+
+    document.getElementById("close-modal").addEventListener("click", () => modal.classList.remove("open"));
+    document.getElementById("cart-toggle").addEventListener("click", () => Cart.toggleDrawer(true));
+    document.getElementById("cart-close").addEventListener("click", () => Cart.toggleDrawer(false));
+    document.getElementById("cart-overlay").addEventListener("click", () => Cart.toggleDrawer(false));
+    Cart.render();
+  </script>
+</body>
+</html>
