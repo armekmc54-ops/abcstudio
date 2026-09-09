@@ -7,14 +7,15 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=BAA0RtrND_LSy6BIpASFUkXKEGSIn4iHfagM_5TH_zLs6U_WKsBDGeF0ADe1tYOiYnR160ptPlf25IMOpQ&currency=MXN&intent=capture&components=buttons"></script>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 :root{
   --ink:#0B0B0D; --paper:#F4F3F1; --pulse:#FF2E63; --volt:#C6FF3D;
   --violet:#7B2FF7; --panel:#131316; --line:#232327; --muted:#8B8B93;
 }
- .product-thumb { 
-  height: 480px; /* Recuadro más grande para PC */
+.product-thumb { 
+  height: 480px; 
   display: flex; 
   align-items: center; 
   justify-content: center; 
@@ -28,7 +29,7 @@
 
 @media (max-width: 768px) {
   .product-thumb {
-    height: 360px !important; /* Recuadro más grande para móviles */
+    height: 360px !important; 
   }
 }
 body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',sans-serif; }
@@ -45,7 +46,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 .btn-sm{ padding:8px 14px; font-size:12px; }
 .product-card{ background:var(--panel); border:1px solid var(--line); border-radius:16px; overflow:hidden; transition:transform .18s ease, border-color .18s ease; }
 .product-card:hover{ transform:translateY(-4px); border-color:#3a3a40; }
-.product-thumb{ height:140px; display:flex; align-items:center; justify-content:center; text-align:center; padding:0 12px; font-family:'Anton',sans-serif; font-size:15px; color:rgba(244,243,241,.6); text-transform:uppercase; }
 .type-badge{ font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase; padding:3px 9px; border-radius:999px; letter-spacing:.05em; font-weight:600; }
 .cart-overlay{ position:fixed; inset:0; background:rgba(11,11,13,.75); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:50; }
 .cart-overlay.open{ opacity:1; pointer-events:auto; }
@@ -308,6 +308,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             <label class="block mb-1 text-gray-400">Correo Electrónico (para tu recibo oficial)</label>
             <input type="email" id="payer-email-input" required placeholder="tu-correo@dominio.com" class="w-full bg-[#1e1e24] border border-[#2e2e36] rounded-lg px-3 py-2 text-xs text-white outline-none focus:border-[--volt]" />
           </div>
+
+          <!-- Casilla reCAPTCHA v2 -->
+          <div class="py-2 flex justify-center">
+            <div class="g-recaptcha" data-sitekey="6Ldd5bItAAAAAIi4_R3-QtYI6M89B82832ZULq09" data-theme="dark"></div>
+          </div>
+
           <div id="paypal-button-container" class="mt-4 min-h-[140px]"></div>
         </form>
       </div>     
@@ -799,7 +805,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const perPerson = Math.round(classInfo.groupPrice / 3);
       const subText = document.getElementById("cal-modal-group-subtext");
       if (subText) subText.textContent = `$${perPerson} MXN c/u en un solo pago`;
-      
+    
       document.getElementById("cal-modal-price").textContent = `$${classInfo.singlePrice.toFixed(2)} MXN`;
     
       const badge = document.getElementById("cal-modal-badge");
@@ -974,6 +980,13 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     document.getElementById("checkout-btn").addEventListener("click", () => {
       if (Cart.items().length === 0) {
         Toast.show("Tu carrito está vacío.");
+        return;
+      }
+
+      // VALIDACIÓN DE SEGURIDAD: Comprobar reCAPTCHA v2
+      const recaptchaResponse = grecaptcha.getResponse();
+      if (!recaptchaResponse) {
+        Toast.show("Por favor verifica que no eres un robot.");
         return;
       }
 
