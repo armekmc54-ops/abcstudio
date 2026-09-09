@@ -912,6 +912,13 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         paypal.Buttons({
           style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' },
           createOrder: function(data, actions) {
+            // VALIDACIÓN DE SEGURIDAD: Comprobar reCAPTCHA v2 antes de cobrar
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+              Toast.show("Por favor verifica que no eres un robot.");
+              throw new Error("reCAPTCHA no verificado");
+            }
+
             const breakdown = calculatePaymentBreakdown(Cart.total());
             return actions.order.create({
               purchase_units: [{
@@ -980,13 +987,6 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     document.getElementById("checkout-btn").addEventListener("click", () => {
       if (Cart.items().length === 0) {
         Toast.show("Tu carrito está vacío.");
-        return;
-      }
-
-      // VALIDACIÓN DE SEGURIDAD: Comprobar reCAPTCHA v2
-      const recaptchaResponse = grecaptcha.getResponse();
-      if (!recaptchaResponse) {
-        Toast.show("Por favor verifica que no eres un robot.");
         return;
       }
 
