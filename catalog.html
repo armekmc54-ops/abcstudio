@@ -362,6 +362,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     }
 
     // 2. Gestor de Carrito
+   // 2. Gestor de Carrito Seguro
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
 
@@ -373,12 +374,23 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       function add(productId, variant = null) {
         const product = PRODUCTS.find(p => p.id === productId);
         if (!product) return;
+
+        // SEGURIDAD: Forzamos el precio oficial del producto del catálogo, ignorando cualquier valor externo
+        const officialPrice = product.price;
+
         const key = variant ? `${product.id}-${variant}` : `${product.id}`;
         const existing = items.find(i => i.key === key);
         if (existing) {
           existing.qty += 1;
         } else {
-          items.push({ key, id: product.id, name: product.name, price: product.price, variant, qty: 1 });
+          items.push({ 
+            key, 
+            id: product.id, 
+            name: product.name, 
+            price: officialPrice, // Precio blindado oficial
+            variant, 
+            qty: 1 
+          });
         }
         save();
         Toast.show(`✓ ${product.name} ${variant ? '('+variant+')' : ''} agregado`);
@@ -404,7 +416,12 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       }
 
       function total() {
-        return items.reduce((sum, item) => sum + item.price * item.qty, 0);
+        // SEGURIDAD: El total se calcula validando siempre contra el precio oficial del catálogo actual
+        return items.reduce((sum, item) => {
+          const product = PRODUCTS.find(p => p.id === item.id);
+          const currentPrice = product ? product.price : item.price;
+          return sum + currentPrice * item.qty;
+        }, 0);
       }
 
       function count() {
@@ -422,6 +439,10 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
         emptyEl.classList.toggle("hidden", items.length > 0);
 
         items.forEach(item => {
+          // Buscamos el precio actual oficial para mostrarlo correctamente
+          const product = PRODUCTS.find(p => p.id === item.id);
+          const displayPrice = product ? product.price : item.price;
+
           const row = document.createElement("div");
           row.className = "flex items-center justify-between gap-3 py-3 border-b";
           row.style.borderColor = "var(--line)";
@@ -429,7 +450,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold truncate text-white">${item.name}</p>
               <p class="text-xs font-mono" style="color:var(--muted)">
-                ${item.variant ? `<span class="text-[--volt]">Talla ${item.variant}</span> · ` : ""}$${item.price.toFixed(2)} MXN
+                ${item.variant ? `<span class="text-[--volt]">Talla ${item.variant}</span> · ` : ""}$${displayPrice.toFixed(2)} MXN
               </p>
             </div>
             <div class="flex items-center gap-2">
@@ -467,7 +488,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       }
       return { show };
     })();
-
+    
     // 3. Filtros
     let currentFilter = new URLSearchParams(window.location.search).get("type") || "all";
 
@@ -679,9 +700,15 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       const in3 = document.getElementById("cat-student-3");
       const err = document.getElementById("cat-group-error");
 
-      const s1 = in1?.value.trim();
-      const s2 = in2?.value.trim();
-      const s3 = in3?.value.trim();
+      // SEGURIDAD: Función para limpiar caracteres extraños o etiquetas HTML (Previene XSS)
+      const sanitize = (str) => {
+        if (!str) return "";
+        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+      };
+
+      const s1 = sanitize(in1?.value);
+      const s2 = sanitize(in2?.value);
+      const s3 = sanitize(in3?.value);
 
       [in1, in2, in3].forEach(el => {
         el?.classList.remove("border-[--pulse]");
