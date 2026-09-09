@@ -817,12 +817,34 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     function getSelectedClassPayload() {
       if (!selectedClassData) return null;
 
-      if (selectedBookingType === "group3") {
-        const s1 = document.getElementById("student-name-1")?.value.trim();
-        const s2 = document.getElementById("student-name-2")?.value.trim();
-        const s3 = document.getElementById("student-name-3")?.value.trim();
+      // SEGURIDAD: Función para limpiar etiquetas HTML y prevenir ataques XSS
+      const sanitize = (str) => {
+        if (!str) return "";
+        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
+      };
 
-        if (!s1 || !s2 || !s3) {
+      if (selectedBookingType === "group3") {
+        const in1 = document.getElementById("student-name-1");
+        const in2 = document.getElementById("student-name-2");
+        const in3 = document.getElementById("student-name-3");
+        const err = document.getElementById("group-error-msg");
+
+        const s1 = sanitize(in1?.value);
+        const s2 = sanitize(in2?.value);
+        const s3 = sanitize(in3?.value);
+
+        [in1, in2, in3].forEach(el => {
+          el?.classList.remove("border-[--pulse]");
+          el?.classList.add("border-[#2e2e36]");
+        });
+
+        let hasError = false;
+        if (!s1) { in1?.classList.add("border-[--pulse]"); in1?.classList.remove("border-[#2e2e36]"); hasError = true; }
+        if (!s2) { in2?.classList.add("border-[--pulse]"); in2?.classList.remove("border-[#2e2e36]"); hasError = true; }
+        if (!s3) { in3?.classList.add("border-[--pulse]"); in3?.classList.remove("border-[#2e2e36]"); hasError = true; }
+
+        if (hasError) {
+          if (err) err.classList.remove("hidden");
           Toast.show("Por favor llena los nombres de los 3 alumnos.");
           return null;
         }
