@@ -550,6 +550,9 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       
       document.getElementById("calendar-class-modal").classList.add("open");
     }
+    function closeClassModal() {
+      document.getElementById("calendar-class-modal").classList.remove("open");
+    }
     function getSelectedClassPayload() {
       if (!selectedClassData) return null;
       if (selectedBookingType === "group3") {
