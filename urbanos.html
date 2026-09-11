@@ -92,18 +92,18 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       <button onclick="toggleMobileMenu(true)" class="md:hidden text-white text-2xl p-1">☰</button>
     </div>
 
-    <!-- Menú Desplegable Lateral / Móvil -->
+   <!-- Menú Desplegable Lateral / Móvil -->
     <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-[--panel] border-l border-[--line] shadow-2xl p-6 flex flex-col gap-6 z-50 transform translate-x-full transition-transform duration-300 md:hidden">
       <div class="flex items-center justify-between border-b border-[--line] pb-4">
         <span class="font-display text-lg text-white">Menú</span>
         <button onclick="toggleMobileMenu(false)" class="text-xl text-gray-400 hover:text-white">✕</button>
       </div>
       <nav class="flex flex-col gap-4 text-sm" style="color:var(--muted)">
-        <a href="index.html" class="hover:text-white transition py-1">Inicio Portal</a>
-        <a href="catalog.html?type=all" class="hover:text-white transition py-1">Catálogo</a>
-        <a href="catalog.html?type=drop_in" class="hover:text-white transition py-1">Clases</a>
-        <a href="catalog.html?type=workshop" class="hover:text-white transition py-1">Talleres</a>
-        <a href="https://drive.google.com/drive/folders/1iu2tmILvsPfG272uGdPB_JigMxHxKl0O?usp=sharing" target="_blank" class="text-[--volt] font-semibold transition py-1">📁 Clases Grabadas</a>
+        <a href="index.html" class="hover:text-white transition py-1 block">Inicio Portal</a>
+        <a href="catalog.html?type=all" class="hover:text-white transition py-1 block">Catálogo</a>
+        <a href="catalog.html?type=drop_in" class="hover:text-white transition py-1 block">Clases</a>
+        <a href="catalog.html?type=workshop" class="hover:text-white transition py-1 block">Talleres</a>
+        <a href="https://drive.google.com/drive/folders/1iu2tmILvsPfG272uGdPB_JigMxHxKl0O?usp=sharing" target="_blank" class="text-[--volt] font-semibold transition py-1 block">📁 Clases Grabadas</a>
       </nav>
     </div>
   </header>
