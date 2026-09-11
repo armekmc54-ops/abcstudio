@@ -70,31 +70,41 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
 </head>
 <body>
 
-  <!-- Navbar -->
-  <header class="navbar flex flex-col md:flex-row items-center justify-between px-6 md:px-10 py-4">
-    <div class="w-full flex items-center justify-between">
-      <a href="index.html" class="font-display text-xl tracking-wider">ABC<span class="brand-dot"> STUDIO (URBANOS)</span></a>
-      <div class="flex items-center gap-3 md:hidden">
-        <button id="cart-toggle-mob" class="relative btn btn-ghost btn-sm" onclick="Cart.toggleDrawer(true)">
-          <span>Carrito</span>
-          <span id="cart-badge-mob" class="cart-badge">0</span>
-        </button>
-        <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-white text-2xl p-1">☰</button>
-      </div>
-    </div>
-    <!-- Enlaces de navegación (Responsivos para Móvil y PC) -->
-    <nav id="mobile-menu" class="hidden md:flex flex-col md:flex-row items-center gap-4 md:gap-8 text-sm w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-[--line]" style="color:var(--muted)">
-      <a href="index.html" class="hover:text-white transition py-1 md:py-0">Inicio Portal</a>
-      <a href="catalog.html?type=all" class="hover:text-white transition py-1 md:py-0">Catálogo</a>
-      <a href="catalog.html?type=drop_in" class="hover:text-white transition py-1 md:py-0">Clases</a>
-      <a href="catalog.html?type=workshop" class="hover:text-white transition py-1 md:py-0">Talleres</a>
-      <a href="https://drive.google.com/drive/folders/1iu2tmILvsPfG272uGdPB_JigMxHxKl0O?usp=sharing" target="_blank" class="hover:text-[--volt] transition font-semibold py-1 md:py-0">📁 Clases Grabadas</a>
+ <!-- Navbar -->
+  <header class="navbar flex items-center justify-between px-6 md:px-10 py-4 relative overflow-x-hidden">
+    <a href="index.html" class="font-display text-xl tracking-wider">ABC<span class="brand-dot"> STUDIO (URBANOS)</span></a>
+    
+    <!-- Navegación para PC -->
+    <nav class="hidden md:flex items-center gap-8 text-sm" style="color:var(--muted)">
+      <a href="index.html" class="hover:text-white transition">Inicio Portal</a>
+      <a href="catalog.html?type=all" class="hover:text-white transition">Catálogo</a>
+      <a href="catalog.html?type=drop_in" class="hover:text-white transition">Clases</a>
+      <a href="catalog.html?type=workshop" class="hover:text-white transition">Talleres</a>
+      <a href="https://drive.google.com/drive/folders/1iu2tmILvsPfG272uGdPB_JigMxHxKl0O?usp=sharing" target="_blank" class="hover:text-[--volt] transition font-semibold">📁 Clases Grabadas</a>
     </nav>
-    <div class="hidden md:flex items-center gap-3">
+
+    <!-- Controles derechos en PC y Botón Menú Móvil -->
+    <div class="flex items-center gap-3">
       <button id="cart-toggle" class="relative btn btn-ghost btn-sm">
         <span>Carrito</span>
         <span id="cart-badge" class="cart-badge">0</span>
       </button>
+      <button onclick="toggleMobileMenu(true)" class="md:hidden text-white text-2xl p-1">☰</button>
+    </div>
+
+    <!-- Menú Desplegable Lateral / Móvil -->
+    <div id="mobile-menu" class="fixed top-0 right-0 h-full w-72 bg-[--panel] border-l border-[--line] shadow-2xl p-6 flex flex-col gap-6 z-50 transform translate-x-full transition-transform duration-300 md:hidden">
+      <div class="flex items-center justify-between border-b border-[--line] pb-4">
+        <span class="font-display text-lg text-white">Menú</span>
+        <button onclick="toggleMobileMenu(false)" class="text-xl text-gray-400 hover:text-white">✕</button>
+      </div>
+      <nav class="flex flex-col gap-4 text-sm" style="color:var(--muted)">
+        <a href="index.html" class="hover:text-white transition py-1">Inicio Portal</a>
+        <a href="catalog.html?type=all" class="hover:text-white transition py-1">Catálogo</a>
+        <a href="catalog.html?type=drop_in" class="hover:text-white transition py-1">Clases</a>
+        <a href="catalog.html?type=workshop" class="hover:text-white transition py-1">Talleres</a>
+        <a href="https://drive.google.com/drive/folders/1iu2tmILvsPfG272uGdPB_JigMxHxKl0O?usp=sharing" target="_blank" class="text-[--volt] font-semibold transition py-1">📁 Clases Grabadas</a>
+      </nav>
     </div>
   </header>
 
@@ -396,6 +406,7 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
       merch: { label: "Merch", color: "var(--pulse)" }
     };
 
+    
     const Cart = (() => {
       let items = JSON.parse(localStorage.getItem("abc_cart") || "[]");
       function save() { localStorage.setItem("abc_cart", JSON.stringify(items)); render(); }
@@ -591,6 +602,16 @@ body{ background:var(--ink); color:var(--paper); font-family:'Space Grotesk',san
     function closeClassModal() {
       document.getElementById("calendar-class-modal").classList.remove("open");
     }
+
+    function toggleMobileMenu(open) {
+      const menu = document.getElementById('mobile-menu');
+      if (open) {
+        menu.style.transform = 'translateX(0)';
+      } else {
+        menu.style.transform = 'translateX(100%)';
+      }
+    }
+    
     function getSelectedClassPayload() {
       if (!selectedClassData) return null;
       if (selectedBookingType === "group3") {
